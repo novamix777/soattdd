@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="theme-color" content="#FFFFFF">
+<title>Información del Vehículo y Coberturas | SOAT</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/component---src-pages-index-tsx.2f90ad7b25207235a98b.css">
+<link rel="stylesheet" href="assets/css/commons.db02d5e21360139d3ecd.css">
+<link rel="stylesheet" href="assets/css/styles.e0403c65ea02169718b0.css">
+<link rel="stylesheet" href="assets/css/style-9faaa9e51cea5853.css">
+<link rel="stylesheet" href="assets/css/styles_ltr.css">
+
+<style>
+  body {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    background-color: #f4f7f9;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+  }
+  .info-container {
+    max-width: 960px;
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+  .info-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid #e9eef2;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .info-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #066188;
+  }
+  .badge-placa {
+    background: #e6f4fa;
+    color: #0a99d6;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 1rem;
+  }
+  .datos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+  }
+  .dato-item {
+    background: #f8fbfd;
+    border: 1px solid #e5edf3;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dato-label {
+    display: block;
+    font-size: 0.78rem;
+    color: #6c7a89;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .dato-valor {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2d3d;
+  }
+  .cobertura-box {
+    border: 1px solid #dce6ee;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .cobertura-box label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 0;
+  }
+  .cobertura-precio {
+    font-weight: 700;
+    color: #066188;
+  }
+  .resumen-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #eef7fc;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #066188;
+  }
+  .acciones-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .btn-secundario {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #0a99d6;
+    color: #0a99d6;
+    background: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-primario {
+    padding: 13px 26px;
+    border-radius: 8px;
+    border: none;
+    background: #0a99d6;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primario:hover {
+    background: #087daf;
+  }
+</style>
+</head>
+<body>
+
+<!-- Aquí iba includes/header.php -->
+<nav class="menu-module--menu--ff100">
+  <div class="menu-module--menu__container--550e5">
+    <div class="logo-module--wrapper__logo--d2507">
+      <a href="index.html">
+        <img class="safe-gatsby-image-module--safeImage--9bfbe menu-module--menu__container__logos__logo--30a8e"
+             src="assets/img/imagen_1_.png"
+             width="609" height="136" alt="seguros mundial" title="seguros mundial">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="info-container">
+  <div class="info-card">
+    <div class="info-header">
+      <h1>Información del Vehículo</h1>
+      <span class="badge-placa" id="vehiculo-placa">ABC123</span>
+    </div>
+
+    <div class="datos-grid">
+      <div class="dato-item">
+        <span class="dato-label">Propietario</span>
+        <span class="dato-valor" id="vehiculo-propietario">Titular de Prueba</span>
+      </div>
+      <div class="dato-item">
+        <span class="dato-label">Documento</span>
+        <span class="dato-valor" id="vehiculo-documento">CC 1000000000</span>
+      </div>
+      <div class="dato-item">
+        <span class="dato-label">Marca / Línea</span>
+        <span class="dato-valor" id="vehiculo-linea">Renault Logan</span>
+      </div>
+      <div class="dato-item">
+        <span class="dato-label">Modelo / Clase</span>
+        <span class="dato-valor" id="vehiculo-modelo">2022 · Automóvil</span>
+      </div>
+    </div>
+  </div>
+
+  <form class="info-card" id="form-coberturas" action="pago.html" method="get">
+    <h2 style="margin-top:0;color:#066188;">Resumen y Coberturas Adicionales</h2>
+
+    <div class="cobertura-box">
+      <div>
+        <strong>SOAT Obligatorio</strong>
+        <div style="font-size:0.88rem;color:#5c6b7a;">Cobertura legal vigente por 1 año</div>
+      </div>
+      <span class="cobertura-precio" id="precio-soat">$540.000</span>
+    </div>
+
+    <div class="cobertura-box">
+      <label>
+        <input type="checkbox" id="chk-terceros" name="terceros" value="1">
+        <span>Seguro Terceros (daños materiales a terceros)</span>
+      </label>
+      <span class="cobertura-precio" id="precio-terceros">+$85.000</span>
+    </div>
+
+    <div class="cobertura-box">
+      <label>
+        <input type="checkbox" id="chk-accidentes" name="accidentes" value="1">
+        <span>Asistencia / Accidentes Personales</span>
+      </label>
+      <span class="cobertura-precio" id="precio-accidentes">+$19.900</span>
+    </div>
+
+    <div class="resumen-total">
+      <span>Total a pagar:</span>
+      <span id="total-pagar">$540.000</span>
+    </div>
+
+    <div class="acciones-bar">
+      <a href="index.html" class="btn-secundario">Volver a cotizar</a>
+      <button type="submit" class="btn-primario">Continuar al pago</button>
+    </div>
+  </form>
+</main>
+
+<!-- Aquí iba includes/footer.php -->
+
+<script>
+(function () {
+  'use strict';
+
+  var BASE_SOAT = 540000;
+  var PRECIO_TERCEROS = 85000;
+  var PRECIO_ACCIDENTES = 19900;
+
+  function formatCOP(valor) {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(valor);
+  }
+
+  // Cargar datos guardados en el navegador si existen
+  var raw = sessionStorage.getItem('cotizacion_soat') || localStorage.getItem('cotizacion_soat');
+  var datos = null;
+  if (raw) {
+    try { datos = JSON.parse(raw); } catch (e) {}
+  }
+
+  if (datos) {
+    if (datos.placa) document.getElementById('vehiculo-placa').textContent = datos.placa;
+    if (datos.propietario) document.getElementById('vehiculo-propietario').textContent = datos.propietario;
+    if (datos.documento || datos.tipo_documento) {
+      document.getElementById('vehiculo-documento').textContent =
+        ((datos.tipo_documento || '') + ' ' + (datos.documento || '')).trim();
+    }
+    if (datos.linea) document.getElementById('vehiculo-linea').textContent = datos.linea;
+    if (datos.modelo) document.getElementById('vehiculo-modelo').textContent = datos.modelo;
+    if (typeof datos.base_soat === 'number' && datos.base_soat > 0) {
+      BASE_SOAT = datos.base_soat;
+    }
+  }
+
+  var chkTerceros = document.getElementById('chk-terceros');
+  var chkAccidentes = document.getElementById('chk-accidentes');
+  var elSoat = document.getElementById('precio-soat');
+  var elTerceros = document.getElementById('precio-terceros');
+  var elAccidentes = document.getElementById('precio-accidentes');
+  var elTotal = document.getElementById('total-pagar');
+
+  elSoat.textContent = formatCOP(BASE_SOAT);
+  elTerceros.textContent = '+' + formatCOP(PRECIO_TERCEROS);
+  elAccidentes.textContent = '+' + formatCOP(PRECIO_ACCIDENTES);
+
+  function actualizarTotal() {
+    var total = BASE_SOAT;
+    if (chkTerceros.checked) total += PRECIO_TERCEROS;
+    if (chkAccidentes.checked) total += PRECIO_ACCIDENTES;
+    elTotal.textContent = formatCOP(total);
+
+    var resumen = {
+      placa: document.getElementById('vehiculo-placa').textContent,
+      terceros: chkTerceros.checked ? 'Sí' : 'No',
+      accidentes: chkAccidentes.checked ? 'Sí' : 'No',
+      total: total,
+      total_formato: formatCOP(total)
+    };
+    sessionStorage.setItem('resumen_soat', JSON.stringify(resumen));
+  }
+
+  chkTerceros.addEventListener('change', actualizarTotal);
+  chkAccidentes.addEventListener('change', actualizarTotal);
+  actualizarTotal();
+
+  document.getElementById('form-coberturas').addEventListener('submit', function () {
+    actualizarTotal();
+  });
+})();
+</script>
+
+</body>
+</html>
