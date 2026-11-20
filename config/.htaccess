@@ -1,0 +1,5 @@
+<Files "tarifas.php">
+<Files "api.local.php">
+<Files "telegram.local.php">
+    Require all denied
+</Files>
