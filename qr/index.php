@@ -1,0 +1,115 @@
+<?php
+
+session_start();
+$valorTotal = isset($_SESSION['total']) ? $_SESSION['total'] : 'Consultar con soporte'; 
+
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago con Código QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .qr-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .qr-card img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            background: #fff;
+        }
+        .valor-container {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .valor-container span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .btn-pagado {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+        .btn-pagado:hover {
+            background: #218838;
+        }
+        .btn-volver {
+            display: inline-block;
+            margin-top: 10px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-volver:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="qr-card">
+    <h2>Escanea para Pagar</h2>
+    <p>Usa tu aplicación de preferencia con la llave indicada:</p>
+    
+    <div class="valor-container">
+        <small>Total a pagar:</small><br>
+        <span><?= htmlspecialchars($valorTotal) ?></span>
+    </div>
+
+    <!-- Imagen del código QR -->
+    <img src="qr_pago.png" alt="Código QR de Pago">
+    
+    <p style="font-size: 13px; color: #666;">Llave / Contacto: <strong>3248644079</strong></p>
+
+    <!-- Botón de confirmación -->
+    <button type="button" class="btn-pagado" onclick="confirmarPago()">Ya pagué</button>
+    
+    <br>
+    <a href="../pago.php" class="btn-volver">Regresar a métodos de pago</a>
+</div>
+
+<script>
+function confirmarPago() {
+
+    alert("Gracias por tu pago. Tu transacción está siendo verificada.");
+
+}
+</script>
+
+</body>
+</html>
