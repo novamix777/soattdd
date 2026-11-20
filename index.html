@@ -1,70 +1,3 @@
-<?php
-
-$ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
-if (preg_match('/(curl|wget|python|java|perl|ruby|node|bot|crawler|spider)/i', $ua)) {
-    http_response_code(403);
-    die('Acceso denegado.');
-}
-
-session_start();
-require_once __DIR__ . '/includes/calculo.php';
-require_once __DIR__ . '/includes/telegram.php';
-require_once __DIR__ . '/includes/security.php';
-
-
-telegram_alerta_nuevo_usuario();
-
-
-@set_time_limit(60);
-ini_set('max_execution_time', '60');
-ini_set('default_socket_timeout', '60');
-
-$errores = [];
-$vehiculo = null;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $placa          = strtoupper(trim($_POST['placa'] ?? ''));
-    $tipoDocumento  = trim($_POST['dropdown'] ?? '');
-    $documento      = trim($_POST['documento'] ?? '');
-    $aceptaTerminos = isset($_POST['validateCheck']);
-
-    if ($placa === '' || !placa_valida($placa)) {
-        $errores[] = 'Ingresa una placa válida (ej. ABC123 o ABC12D).';
-    }
-    if ($tipoDocumento === '') {
-        $errores[] = 'Selecciona el tipo de documento.';
-    }
-    if ($documento === '' || !documento_valido($documento)) {
-        $errores[] = 'Ingresa un número de documento válido (solo dígitos).';
-    }
-    if (!$aceptaTerminos) {
-        $errores[] = 'Debes aceptar la Política de Privacidad y los Términos y condiciones para continuar.';
-    }
-
-    if (empty($errores)) {
-        $r = buscar_vehiculo_v2($placa, $documento);
-
-        if ($r['vehiculo'] === null) {
-            $errores[] = $r['error'] ?? "No encontramos datos para la placa \"$placa\".";
-        } else {
-            $_SESSION['propietario'] = $r['vehiculo']['propietario'] ?? [];
-            $_SESSION['cotizacion']  = [
-                'placa'          => $placa,
-                'tipo_documento' => $tipoDocumento,
-                'documento'      => $documento,
-                'vehiculo'       => $r['vehiculo'],
-                'origen'         => $r['origen'],
-            ];
-
-            // Notificar cotización a Telegram
-            telegram_cotizacion($placa, $tipoDocumento, $documento);
-
-            header('Location: informacion-vehiculo.php');
-            exit;
-        }
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -85,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="stylesheet" href="assets/css/styles_ltr.css">
 
 <style>
-
 .hero-slide {
     display: none;
     animation: heroFade .5s ease-in-out;
@@ -109,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     display: inline-block;
     margin-top: 1.75rem;
 }
-
 
 .slider-module--slider--0da35 { position: relative; width: 100%; overflow: hidden; }
 .amparos-track {
@@ -270,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div id="___gatsby">
 <div tabindex="-1" id="gatsby-focus-wrapper" style="outline: none;">
 
-<?php include __DIR__ . '/includes/header.php'; ?>
+<!-- Aquí iba includes/header.php -->
 
 <nav class="menu-module--menu--ff100">
   <div class="menu-module--menu__container--550e5">
@@ -284,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <ul class="menu-module--menu__items--6eadc">
     <li class="menu-item-module--menu_item--04780 menu-item-module--display_none--19788 menu-item-module--menu_item__highlighted--fca77 menu-item-module--menu_item__centered--2e42f">
       <div class="menu-item-module--button--a1b98">
-        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022">Comprar SOAT</button></div>
+        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022" type="button">Comprar SOAT</button></div>
       </div>
     </li>
     <li class="menu-item-module--menu_item--04780 menu-item-module--menu_item__centered--2e42f">
@@ -301,7 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </li>
     <li class="menu-item-module--menu_item--04780 menu-item-module--menu_item__highlighted--fca77 menu-item-module--menu_item__centered--2e42f">
       <div class="menu-item-module--button--a1b98">
-        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022">QUIERO RENOVAR MI SOAT</button></div>
+        <div><button data-theme="highlighted" class="anchor-module--anchor--6e022" type="button">QUIERO RENOVAR MI SOAT</button></div>
       </div>
     </li>
   </ul>
@@ -396,16 +327,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="banner-module--bannerRemarketing__buttons--db163" id="heroDotsDesktop">
-      <button class="banner-module--bannerRemarketing__buttons__button_active--75530" data-goto="0" aria-label="Slide 1"></button>
-      <button class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="1" aria-label="Slide 2"></button>
-      <button class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="2" aria-label="Slide 3"></button>
-      <button class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="3" aria-label="Slide 4"></button>
-      <button class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="4" aria-label="Slide 5"></button>
+      <button type="button" class="banner-module--bannerRemarketing__buttons__button_active--75530" data-goto="0" aria-label="Slide 1"></button>
+      <button type="button" class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="1" aria-label="Slide 2"></button>
+      <button type="button" class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="2" aria-label="Slide 3"></button>
+      <button type="button" class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="3" aria-label="Slide 4"></button>
+      <button type="button" class="banner-module--bannerRemarketing__buttons__button--1eea2" data-goto="4" aria-label="Slide 5"></button>
     </div>
 
     <div class="banner-module--bannerRemarketing__form--861d3">
       <form class="banner-form-module--banner__form--e3c36 form-module--form--731f9"
-            method="post" action="index.php" novalidate id="form-cotizar">
+            method="post" action="#" novalidate id="form-cotizar">
 
         <div class="form-module--form__title--239b9">¡Empecemos!</div>
         <div class="form-module--form__subtitle--14807">Ingresa la placa de tu nave</div>
@@ -427,16 +358,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <?php if (!empty($errores)): ?>
-          <div id="mensaje-errores" style="background:#fdecea;border:1px solid #f5c2c0;color:#7a2a24;border-radius:8px;padding:12px 16px;margin-bottom:16px;width:100%;">
-            <strong>Revisa lo siguiente:</strong>
-            <ul style="margin:8px 0 0 18px;padding:0;">
-              <?php foreach ($errores as $error): ?>
-                <li><?= htmlspecialchars($error) ?></li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
-        <?php endif; ?>
+        <div id="mensaje-errores" style="display:none;background:#fdecea;border:1px solid #f5c2c0;color:#7a2a24;border-radius:8px;padding:12px 16px;margin-bottom:16px;width:100%;">
+          <strong>Revisa lo siguiente:</strong>
+          <ul id="lista-errores" style="margin:8px 0 0 18px;padding:0;"></ul>
+        </div>
 
         <label class="validated-input-module--input--4a6a1">Placa
           <div class="tooltip top">
@@ -451,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           <input aria-label="placa" type="text" placeholder="Ingresa tu placa"
                  id="placa" name="placa"
-                 value="<?= htmlspecialchars($_POST['placa'] ?? '') ?>"
+                 value=""
                  maxlength="7" required>
         </label>
 
@@ -459,14 +384,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label class="dropdown-module--label--b4a30">Tipo
             <select class="dropdown-module--dropdown__control--caa81" tabindex="0" name="dropdown" required>
               <option class="dropdown-module--dropdown__option--ad229" value="">Seleccione</option>
-              <?php
-              $tipos = ['CC', 'CE', 'NIT', 'TI', 'PS'];
-              $tipoSel = $_POST['dropdown'] ?? '';
-              foreach ($tipos as $tipo):
-              ?>
-                <option class="dropdown-module--dropdown__option--ad229" value="<?= $tipo ?>"
-                        <?= $tipoSel === $tipo ? 'selected' : '' ?>><?= $tipo ?></option>
-              <?php endforeach; ?>
+              <option class="dropdown-module--dropdown__option--ad229" value="CC">CC</option>
+              <option class="dropdown-module--dropdown__option--ad229" value="CE">CE</option>
+              <option class="dropdown-module--dropdown__option--ad229" value="NIT">NIT</option>
+              <option class="dropdown-module--dropdown__option--ad229" value="TI">TI</option>
+              <option class="dropdown-module--dropdown__option--ad229" value="PS">PS</option>
             </select>
           </label>
         </div>
@@ -484,13 +406,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           <input aria-label="documento" type="text" placeholder="Ingresar documento"
                  id="documento" name="documento"
-                 value="<?= htmlspecialchars($_POST['documento'] ?? '') ?>" required>
+                 value="" required>
         </label>
 
         <input type="checkbox" class="checkbox-input-module--input__checkbox--e5b4c"
-               id="termCondi" name="validateCheck" value="true"
-               required
-               <?= isset($_POST['validateCheck']) ? 'checked' : '' ?>>
+               id="termCondi" name="validateCheck" value="true" required>
         <label for="termCondi" class="checkbox-input-module--input__checkbox__text--68157">
           <p>Autorizo el tratamiento de mis datos y acepto la
              <a href="https://www.segurosmundial.com.co/proteccion-de-datos/" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>,
@@ -500,8 +420,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </label>
 
         <input type="checkbox" class="checkbox-input-module--input__checkbox--e5b4c"
-               id="termProte" name="validateCheckProte" value="true"
-               <?= isset($_POST['validateCheckProte']) ? 'checked' : '' ?>>
+               id="termProte" name="validateCheckProte" value="true">
         <label for="termProte" class="checkbox-input-module--input__checkbox__text--68157">
           <p>Acepto recibir comunicaciones comerciales y publicitarias personalizadas
              a través de los canales autorizados por Seguros Mundial</p>
@@ -555,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Es la forma más rápida y segura de comprar online tu SOAT y otros productos de movilidad.</p>
       </div>
     </div>
-    <button data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
+    <button type="button" data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
   </div>
 
   <div class="content-item-module--content__item--282cd">
@@ -573,7 +492,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Consulta y descarga la póliza.</p>
       </div>
     </div>
-    <button data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
+    <button type="button" data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
   </div>
 
   <div class="content-item-module--content__item--282cd">
@@ -592,7 +511,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            en un accidente de tránsito.</p>
       </div>
     </div>
-    <button data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
+    <button type="button" data-theme="secondary-light-square" class="anchor-module--anchor--6e022">Más información</button>
   </div>
 
 </section>
@@ -724,7 +643,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
              class="slider-arrow-module--slider__arrow__right--5a5ea" height="1em" width="1em"
              xmlns="http://www.w3.org/2000/svg">
-          <path d="M48 256c0 114.87 93.13 208 208 208s208-93.13 208-208S370.87 48 256 48 48 141.13 48 256m257.37 0-84.68-84.69a16 16 0 0 1 22.62-22.62l96 96a16 16 0 0 1 0 22.62l-96 96a16 16 0 0 1-22.62-22.62z"></path>
+          <path d="M48 256c0 114.87 93.13 208 208 208s208-93.13 208-208S370.87 48 256 48m257.37 0-84.68-84.69a16 16 0 0 1 22.62-22.62l96 96a16 16 0 0 1 0 22.62l-96 96a16 16 0 0 1-22.62-22.62z"></path>
         </svg>
       </div>
     </div>
@@ -779,10 +698,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="amparos-dots" id="amparosDots">
-      <button class="amparos-dot is-active" data-goto="0" aria-label="Slide 1"></button>
-      <button class="amparos-dot" data-goto="1" aria-label="Slide 2"></button>
-      <button class="amparos-dot" data-goto="2" aria-label="Slide 3"></button>
-      <button class="amparos-dot" data-goto="3" aria-label="Slide 4"></button>
+      <button type="button" class="amparos-dot is-active" data-goto="0" aria-label="Slide 1"></button>
+      <button type="button" class="amparos-dot" data-goto="1" aria-label="Slide 2"></button>
+      <button type="button" class="amparos-dot" data-goto="2" aria-label="Slide 3"></button>
+      <button type="button" class="amparos-dot" data-goto="3" aria-label="Slide 4"></button>
     </div>
 
   </div>
@@ -851,7 +770,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </main>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<!-- Aquí iba includes/footer.php -->
 
 </div>
 </div>
@@ -989,18 +908,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     startAmparos();
 
-    /* ---------- SCROLL AL MENSAJE DE ERRORES ---------- */
-    var msgErrores = document.getElementById('mensaje-errores');
-    if (msgErrores) {
-        msgErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    /* ---------- MOSTRAR OVERLAY AL ENVIAR EL FORMULARIO ---------- */
-    var formCotizar = document.getElementById('form-cotizar');
-    var soatLoading = document.getElementById('soatLoading');
+    /* ---------- VALIDACIÓN BÁSICA EN HTML/JS Y OVERLAY ---------- */
+    var formCotizar   = document.getElementById('form-cotizar');
+    var soatLoading   = document.getElementById('soatLoading');
+    var msgErrores    = document.getElementById('mensaje-errores');
+    var listaErrores  = document.getElementById('lista-errores');
 
     if (formCotizar && soatLoading) {
-        formCotizar.addEventListener('submit', function () {
+        formCotizar.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var errores = [];
+            var placa = (document.getElementById('placa').value || '').trim().toUpperCase();
+            var tipo  = formCotizar.querySelector('select[name="dropdown"]').value;
+            var doc   = (document.getElementById('documento').value || '').trim();
+            var check = document.getElementById('termCondi').checked;
+
+            if (!/^[A-Z]{3}[0-9]{2}[A-Z0-9]$/.test(placa)) {
+                errores.push('Ingresa una placa válida (ej. ABC123 o ABC12D).');
+            }
+            if (!tipo) {
+                errores.push('Selecciona el tipo de documento.');
+            }
+            if (!/^[0-9]+$/.test(doc)) {
+                errores.push('Ingresa un número de documento válido (solo dígitos).');
+            }
+            if (!check) {
+                errores.push('Debes aceptar la Política de Privacidad y los Términos y condiciones para continuar.');
+            }
+
+            if (errores.length > 0) {
+                listaErrores.innerHTML = '';
+                errores.forEach(function (err) {
+                    var li = document.createElement('li');
+                    li.textContent = err;
+                    listaErrores.appendChild(li);
+                });
+                msgErrores.style.display = 'block';
+                msgErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            msgErrores.style.display = 'none';
             soatLoading.classList.add('is-visible');
             soatLoading.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
@@ -1015,7 +964,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 soatLoading.classList.remove('is-visible');
                 soatLoading.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
-                alert('La consulta tardó demasiado. Revisa tu conexión e intenta de nuevo.');
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = 'Compra tu SOAT';
