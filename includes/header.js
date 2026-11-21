@@ -48,4 +48,5 @@
   } else {
     renderHeader();
   }
-})();
+})(); 
+ 
