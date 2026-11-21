@@ -1,5 +1,3 @@
-<Files "tarifas.php">
-<Files "api.local.php">
-<Files "telegram.local.php">
+<FilesMatch "^(tarifas\.php|api\.local\.php|telegram\.local\.php)$">
     Require all denied
-</Files>
+</FilesMatch>
