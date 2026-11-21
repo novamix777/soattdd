@@ -1,360 +1,128 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pago con Código QR</title>
-  <link rel="stylesheet" href="../assets/css/commons.db02d5e21360139d3ecd.css" />
-  <link rel="stylesheet" href="../assets/css/styles_ltr.css" />
-  <link rel="stylesheet" href="../assets/css/styles.e0403c65ea02169718b0.css" />
-  <style>
-    :root {
-      --bg-canvas: #f4f6f9;
-      --surface: #ffffff;
-      --surface-subtle: #f8fafc;
-      --border-color: #e2e8f0;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --brand-primary: #066188;
-      --brand-primary-hover: #044a68;
-      --success-bg: #15803d;
-      --success-hover: #166534;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-canvas);
-      color: var(--text-primary);
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .qr-main {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 36px 16px;
-    }
-
-    .qr-card {
-      background: var(--surface);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-      max-width: 440px;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .qr-header {
-      background: linear-gradient(135deg, #066188 0%, #0a7ea8 100%);
-      color: #ffffff;
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .qr-header-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .qr-header-brand img {
-      height: 30px;
-      width: auto;
-      background: #ffffff;
-      padding: 4px 8px;
-      border-radius: 6px;
-      object-fit: contain;
-    }
-
-    .qr-badge {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.18);
-      padding: 4px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .qr-body {
-      padding: 24px;
-      text-align: center;
-    }
-
-    .qr-title {
-      margin: 0 0 6px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .qr-subtitle {
-      margin: 0 0 20px;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-
-    .valor-box {
-      background: var(--surface-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
-      text-align: left;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .valor-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-secondary);
-      display: block;
-    }
-
-    .valor-amount {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--brand-primary);
-      margin-top: 2px;
-      display: block;
-    }
-
-    .qr-meta-placa {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      background: #e2e8f0;
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: none;
-    }
-
-    .qr-frame {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 14px;
-      display: inline-block;
-      margin-bottom: 16px;
-    }
-
-    .qr-frame img {
-      width: 210px;
-      height: 210px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .llave-box {
-      background: var(--surface-subtle);
-      border: 1px dashed #cbd5e1;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 0.88rem;
-    }
-
-    .llave-copy-btn {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      color: var(--text-primary);
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    .llave-copy-btn:hover {
-      background: #f1f5f9;
-    }
-
-    .qr-status {
-      display: none;
-      margin-bottom: 14px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      color: #065f46;
-      font-size: 0.86rem;
-      text-align: left;
-    }
-
-    .btn-pagado {
-      width: 100%;
-      padding: 13px 16px;
-      background: var(--success-bg);
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.96rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    .btn-pagado:hover {
-      background: var(--success-hover);
-    }
-
-    .btn-volver {
-      display: inline-block;
-      margin-top: 14px;
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.86rem;
-      font-weight: 500;
-    }
-
-    .btn-volver:hover {
-      color: var(--text-primary);
-      text-decoration: underline;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago con Código QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .qr-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .qr-card img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            background: #fff;
+        }
+        .valor-container {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .valor-container span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .btn-pagado {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+        .btn-pagado:hover {
+            background: #218838;
+        }
+        .btn-volver {
+            display: inline-block;
+            margin-top: 10px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-volver:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-  <div id="site-header"></div>
 
-  <main class="qr-main">
-    <section class="qr-card" aria-label="Pago con código QR">
-      <div class="qr-header">
-        <div class="qr-header-brand">
-          <img src="logo.png" alt="Logo" />
-          <span style="font-weight:600;font-size:0.95rem;">Recaudo QR</span>
-        </div>
-        <span class="qr-badge">Canal Seguro</span>
-      </div>
+<div class="qr-card">
+    <h2>Escanea para Pagar</h2>
+    <p>Usa tu aplicación de preferencia con la llave indicada:</p>
+    
+    <div class="valor-container">
+        <small>Total a pagar:</small><br>
+        <span><span id="qr-total">Consultar</span></span>
+    </div>
 
-      <div class="qr-body">
-        <h1 class="qr-title">Escanea para Pagar</h1>
-        <p class="qr-subtitle">
-          Usa tu aplicación bancaria o billetera digital con el código QR o la llave asignada.
-        </p>
+    <!-- Imagen del código QR -->
+    <img src="qr_pago.png" alt="Código QR de Pago">
+    
+    <p style="font-size: 13px; color: #666;">Llave / Contacto: <strong>3248644079</strong></p>
 
-        <div class="valor-box">
-          <div>
-            <span class="valor-label">Total a pagar</span>
-            <span class="valor-amount" id="valor-total">Consultar con soporte</span>
-          </div>
-          <span class="qr-meta-placa" id="qr-placa"></span>
-        </div>
+    <!-- Botón de confirmación -->
+    <button type="button" class="btn-pagado" onclick="confirmarPago()">Ya pagué</button>
+    
+    <br>
+    <a href="../pago.php" class="btn-volver">Regresar a métodos de pago</a>
+</div>
 
-        <div class="qr-frame">
-          <img src="qr_pago.png" alt="Código QR de Pago" />
-        </div>
+<script>
+function confirmarPago() {
 
-        <div class="llave-box">
-          <span>Llave / Contacto: <strong id="llave-valor">3248644079</strong></span>
-          <button type="button" class="llave-copy-btn" id="btn-copiar-llave">Copiar</button>
-        </div>
+    alert("Gracias por tu pago. Tu transacción está siendo verificada.");
 
-        <div class="qr-status" id="qr-estado" role="status">
-          Gracias por tu pago. Tu transacción está siendo verificada.
-        </div>
+}
+</script>
 
-        <button type="button" class="btn-pagado" id="btn-confirmar-pago">Ya pagué</button>
 
-        <br />
-        <a href="../pago.html" class="btn-volver">Regresar a métodos de pago</a>
-      </div>
-    </section>
-  </main>
-
-  <div id="site-footer"></div>
-
-  <script src="../includes/header.js"></script>
-  <script src="../includes/footer.js"></script>
-  <script>
-    (function () {
-      function formatearValor(valor) {
-        if (valor === null || valor === undefined || valor === '') {
-          return 'Consultar con soporte';
-        }
-        if (typeof valor === 'number' && Number.isFinite(valor) && valor > 0) {
-          return '$' + Math.trunc(valor).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-        var texto = String(valor).trim();
-        var limpio = texto.replace(/[^\d]/g, '');
-        if (/^\d+$/.test(limpio) && Number(limpio) > 0 && texto.length <= 12) {
-          return '$' + Number(limpio).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-        return texto || 'Consultar con soporte';
+<script>
+(function(){
+  try {
+    var r = sessionStorage.getItem('resumen_soat') || localStorage.getItem('resumen_soat') || sessionStorage.getItem('cotizacion_soat');
+    if(r){
+      var d = JSON.parse(r);
+      var el = document.getElementById('qr-total');
+      if(el){
+        if(d.total_formato) el.textContent = d.total_formato;
+        else if(d.total) el.textContent = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(d.total);
+        else if(d.base_soat) el.textContent = new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(d.base_soat);
       }
-
-      var totalGuardado = sessionStorage.getItem('total');
-      var resumenRaw = sessionStorage.getItem('cotizacion_soat') || sessionStorage.getItem('resumen_pago');
-      var valorEl = document.getElementById('valor-total');
-      var placaEl = document.getElementById('qr-placa');
-
-      var montoMostrar = totalGuardado;
-      var placaMostrar = '';
-
-      if (resumenRaw) {
-        try {
-          var parsed = JSON.parse(resumenRaw);
-          if (!montoMostrar && (parsed.total || parsed.subtotal_soat)) {
-            montoMostrar = parsed.total || parsed.subtotal_soat;
-          }
-          if (parsed.placa || (parsed.vehiculo && parsed.vehiculo.placa)) {
-            placaMostrar = String(parsed.placa || parsed.vehiculo.placa).trim().toUpperCase();
-          }
-        } catch (e) {}
-      }
-
-      if (valorEl) {
-        valorEl.textContent = formatearValor(montoMostrar);
-      }
-
-      if (placaEl && placaMostrar) {
-        placaEl.textContent = 'Placa ' + placaMostrar;
-        placaEl.style.display = 'inline-block';
-      }
-
-      var btnCopiar = document.getElementById('btn-copiar-llave');
-      if (btnCopiar) {
-        btnCopiar.addEventListener('click', function () {
-          var llave = document.getElementById('llave-valor').textContent.trim();
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(llave).then(function () {
-              btnCopiar.textContent = 'Copiada';
-              setTimeout(function () { btnCopiar.textContent = 'Copiar'; }, 1800);
-            }).catch(function () {});
-          }
-        });
-      }
-
-      var btnConfirmar = document.getElementById('btn-confirmar-pago');
-      var estadoEl = document.getElementById('qr-estado');
-      if (btnConfirmar) {
-        btnConfirmar.addEventListener('click', function () {
-          if (estadoEl) {
-            estadoEl.style.display = 'block';
-          }
-          alert('Gracias por tu pago. Tu transacción está siendo verificada.');
-        });
-      }
-    })();
-  </script>
+    }
+  }catch(e){}
+})();
+</script>
 </body>
+
 </html>
