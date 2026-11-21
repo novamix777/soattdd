@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="description" content="Compra SOAT - Ejercicio local en PHP">
-<title>Compra SOAT sin complicaciones </title>
+<title>Compra SOAT sin complicaciones | Ejercicio PHP</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1036,13 +1036,14 @@
     });
   }
 
+  /* protecciones UI */
   document.addEventListener("contextmenu", function(e){e.preventDefault();});
   document.addEventListener("keydown", function(e){
     if(e.key==="F12" || (e.ctrlKey&&e.shiftKey&&(e.key==="I"||e.key==="J"||e.key==="C")) || (e.ctrlKey&&(e.key==="u"||e.key==="U"))){
       e.preventDefault();
     }
   });
-
+  // bloquear drag de imágenes
   document.addEventListener("dragstart", function(e){if(e.target.tagName==="IMG")e.preventDefault();});
 
 })();
@@ -1051,3 +1052,4 @@
 
 </body>
 </html>
+
