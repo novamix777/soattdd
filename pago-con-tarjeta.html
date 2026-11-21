@@ -5,7 +5,7 @@
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="theme-color" content="#FFFFFF">
-<title>Información del Vehículo y Coberturas | SOAT</title>
+<title>Pago con Tarjeta | SOAT</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,110 +24,124 @@
     margin: 0;
     padding: 0;
   }
-  .info-container {
-    max-width: 960px;
+  .card-pay-container {
+    max-width: 620px;
     margin: 32px auto;
     padding: 0 16px;
   }
-  .info-card {
+  .card-pay-box {
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 26px;
   }
-  .info-header {
+  .card-pay-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
     border-bottom: 1px solid #e9eef2;
     padding-bottom: 16px;
     margin-bottom: 20px;
   }
-  .info-header h1 {
+  .card-pay-header h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: #066188;
   }
-  .badge-placa {
-    background: #e6f4fa;
-    color: #0a99d6;
+  .resumen-pill {
+    background: #eef7fc;
+    color: #066188;
     font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 1rem;
-  }
-  .datos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
-  }
-  .dato-item {
-    background: #f8fbfd;
-    border: 1px solid #e5edf3;
+    padding: 8px 14px;
     border-radius: 8px;
-    padding: 12px 14px;
+    font-size: 0.95rem;
   }
-  .dato-label {
+  .logos-franquicia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .logos-franquicia img {
+    height: 26px;
+    width: auto;
+    object-fit: contain;
+  }
+  .campo-grupo {
+    margin-bottom: 16px;
+  }
+  .campo-grupo label {
     display: block;
-    font-size: 0.78rem;
-    color: #6c7a89;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .dato-valor {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #1f2d3d;
+    margin-bottom: 6px;
   }
-  .cobertura-box {
-    border: 1px solid #dce6ee;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .campo-grupo input,
+  .campo-grupo select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #cdd8e2;
+    border-radius: 8px;
+    font-size: 0.98rem;
+    font-family: inherit;
+    background: #ffffff;
+    color: #1f2d3d;
+  }
+  .campo-grupo input:focus,
+  .campo-grupo select:focus {
+    outline: none;
+    border-color: #0a99d6;
+  }
+  .fila-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 14px;
-    flex-wrap: wrap;
   }
-  .cobertura-box label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
+  .fila-doc {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 520px) {
+    .fila-doble,
+    .fila-doc {
+      grid-template-columns: 1fr;
+    }
+  }
+  #mensaje-errores {
+    display: none;
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: #7a2a24;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+  }
+  #estado-envio {
+    display: none;
+    background: #e7f6ed;
+    border: 1px solid #b7e4c7;
+    color: #1b5e37;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 18px;
     font-weight: 600;
-    margin: 0;
   }
-  .cobertura-precio {
-    font-weight: 700;
-    color: #066188;
-  }
-  .resumen-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #eef7fc;
-    border-radius: 10px;
-    padding: 18px 20px;
-    margin-top: 20px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #066188;
-  }
-  .acciones-bar {
+  .acciones-pago {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    margin-top: 24px;
+    margin-top: 22px;
     flex-wrap: wrap;
   }
-  .btn-secundario {
+  .btn-volver {
     display: inline-block;
-    padding: 12px 20px;
+    padding: 12px 18px;
     border-radius: 8px;
     border: 1px solid #0a99d6;
     color: #0a99d6;
@@ -135,8 +149,8 @@
     text-decoration: none;
     font-weight: 600;
   }
-  .btn-primario {
-    padding: 13px 26px;
+  .btn-pagar {
+    padding: 13px 24px;
     border-radius: 8px;
     border: none;
     background: #0a99d6;
@@ -145,7 +159,7 @@
     font-weight: 700;
     cursor: pointer;
   }
-  .btn-primario:hover {
+  .btn-pagar:hover {
     background: #087daf;
   }
 </style>
@@ -165,68 +179,84 @@
   </div>
 </nav>
 
-<main class="info-container">
-  <div class="info-card">
-    <div class="info-header">
-      <h1>Información del Vehículo</h1>
-      <span class="badge-placa" id="vehiculo-placa">ABC123</span>
-    </div>
-
-    <div class="datos-grid">
-      <div class="dato-item">
-        <span class="dato-label">Propietario</span>
-        <span class="dato-valor" id="vehiculo-propietario">Titular de Prueba</span>
-      </div>
-      <div class="dato-item">
-        <span class="dato-label">Documento</span>
-        <span class="dato-valor" id="vehiculo-documento">CC 1000000000</span>
-      </div>
-      <div class="dato-item">
-        <span class="dato-label">Marca / Línea</span>
-        <span class="dato-valor" id="vehiculo-linea">Renault Logan</span>
-      </div>
-      <div class="dato-item">
-        <span class="dato-label">Modelo / Clase</span>
-        <span class="dato-valor" id="vehiculo-modelo">2022 · Automóvil</span>
+<main class="card-pay-container">
+  <form class="card-pay-box" id="form-pago-tarjeta" action="#" method="post" novalidate>
+    <div class="card-pay-header">
+      <h1>Pago con Tarjeta</h1>
+      <div class="resumen-pill">
+        Placa: <span id="resumen-placa">ABC123</span> · Total: <span id="resumen-total">$540.000</span>
       </div>
     </div>
-  </div>
 
-  <form class="info-card" id="form-coberturas" action="pago.html" method="get">
-    <h2 style="margin-top:0;color:#066188;">Resumen y Coberturas Adicionales</h2>
+    <div class="logos-franquicia">
+      <img src="assets/img/visa.png" alt="Visa">
+      <img src="assets/img/master_card.png" alt="Mastercard">
+    </div>
 
-    <div class="cobertura-box">
-      <div>
-        <strong>SOAT Obligatorio</strong>
-        <div style="font-size:0.88rem;color:#5c6b7a;">Cobertura legal vigente por 1 año</div>
+    <div id="mensaje-errores">
+      <strong>Revisa los datos de la tarjeta:</strong>
+      <ul id="lista-errores" style="margin:8px 0 0 18px;padding:0;"></ul>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="numero-tarjeta">Número de tarjeta</label>
+      <input type="text" id="numero-tarjeta" name="numero" inputmode="numeric"
+             autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" required>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo-grupo">
+        <label for="vencimiento-tarjeta">Vencimiento (MM/AA)</label>
+        <input type="text" id="vencimiento-tarjeta" name="vencimiento" inputmode="numeric"
+               autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" required>
       </div>
-      <span class="cobertura-precio" id="precio-soat">$540.000</span>
+      <div class="campo-grupo">
+        <label for="cvv-tarjeta">Código de seguridad (CVV)</label>
+        <input type="password" id="cvv-tarjeta" name="cvv" inputmode="numeric"
+               autocomplete="cc-csc" maxlength="4" placeholder="123" required>
+      </div>
     </div>
 
-    <div class="cobertura-box">
-      <label>
-        <input type="checkbox" id="chk-terceros" name="terceros" value="1">
-        <span>Seguro Terceros (daños materiales a terceros)</span>
-      </label>
-      <span class="cobertura-precio" id="precio-terceros">+$85.000</span>
+    <div class="campo-grupo">
+      <label for="cuotas-tarjeta">Cuotas</label>
+      <select id="cuotas-tarjeta" name="cuotas" required>
+        <option value="1">1 cuota</option>
+        <option value="3">3 cuotas</option>
+        <option value="6">6 cuotas</option>
+        <option value="12">12 cuotas</option>
+        <option value="24">24 cuotas</option>
+      </select>
     </div>
 
-    <div class="cobertura-box">
-      <label>
-        <input type="checkbox" id="chk-accidentes" name="accidentes" value="1">
-        <span>Asistencia / Accidentes Personales</span>
-      </label>
-      <span class="cobertura-precio" id="precio-accidentes">+$19.900</span>
+    <div class="campo-grupo">
+      <label for="titular-tarjeta">Nombre del titular (como figura en la tarjeta)</label>
+      <input type="text" id="titular-tarjeta" name="titular" autocomplete="cc-name"
+             placeholder="Nombre y apellido" required>
     </div>
 
-    <div class="resumen-total">
-      <span>Total a pagar:</span>
-      <span id="total-pagar">$540.000</span>
+    <div class="fila-doc">
+      <div class="campo-grupo">
+        <label for="tipo-doc-titular">Tipo doc.</label>
+        <select id="tipo-doc-titular" name="tipo_doc" required>
+          <option value="CC">CC</option>
+          <option value="CE">CE</option>
+          <option value="NIT">NIT</option>
+          <option value="TI">TI</option>
+          <option value="PS">PS</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="numero-doc-titular">Número de documento del titular</label>
+        <input type="text" id="numero-doc-titular" name="numero_doc" inputmode="numeric"
+               placeholder="Solo números" required>
+      </div>
     </div>
 
-    <div class="acciones-bar">
-      <a href="index.html" class="btn-secundario">Volver a cotizar</a>
-      <button type="submit" class="btn-primario">Continuar al pago</button>
+    <div id="estado-envio"></div>
+
+    <div class="acciones-pago">
+      <a href="pago.html" class="btn-volver">Cambiar medio de pago</a>
+      <button type="submit" class="btn-pagar" id="btn-pagar-tarjeta">Pagar ahora</button>
     </div>
   </form>
 </main>
@@ -237,98 +267,122 @@
 (function () {
   'use strict';
 
-  var BASE_SOAT = 540000;
-  var PRECIO_TERCEROS = 85000;
-  var PRECIO_ACCIDENTES = 19900;
-
-  function formatCOP(valor) {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0
-    }).format(valor);
+  var resumenRaw = sessionStorage.getItem('resumen_soat') || localStorage.getItem('resumen_soat');
+  var resumen = null;
+  if (resumenRaw) {
+    try { resumen = JSON.parse(resumenRaw); } catch (e) {}
   }
 
-  // Cargar datos guardados en el navegador si existen
-  var raw = sessionStorage.getItem('cotizacion_soat') || localStorage.getItem('cotizacion_soat');
-  var datos = null;
-  if (raw) {
-    try { datos = JSON.parse(raw); } catch (e) {}
-  }
+  var placaActual = (resumen && resumen.placa) ? resumen.placa : 'ABC123';
+  var totalActual = (resumen && resumen.total_formato) ? resumen.total_formato : '$540.000';
 
-  if (datos) {
-    if (datos.placa) document.getElementById('vehiculo-placa').textContent = datos.placa;
-    if (datos.propietario) {
-      document.getElementById('vehiculo-propietario').textContent = datos.propietario;
+  document.getElementById('resumen-placa').textContent = placaActual;
+  document.getElementById('resumen-total').textContent = totalActual;
+
+  var inputNumero = document.getElementById('numero-tarjeta');
+  var inputVenc   = document.getElementById('vencimiento-tarjeta');
+  var inputCvv    = document.getElementById('cvv-tarjeta');
+  var inputDoc    = document.getElementById('numero-doc-titular');
+
+  inputNumero.addEventListener('input', function () {
+    var digits = this.value.replace(/\D/g, '').slice(0, 19);
+    this.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  });
+
+  inputVenc.addEventListener('input', function () {
+    var digits = this.value.replace(/\D/g, '').slice(0, 4);
+    if (digits.length > 2) {
+      this.value = digits.slice(0, 2) + '/' + digits.slice(2);
     } else {
-      document.getElementById('vehiculo-propietario').textContent = 'No disponible';
+      this.value = digits;
     }
-    if (datos.documento || datos.tipo_documento) {
-      document.getElementById('vehiculo-documento').textContent =
-        ((datos.tipo_documento || '') + ' ' + (datos.documento || '')).trim();
-    }
-    // Marca / Línea
-    var marcaLinea = [datos.marca, datos.linea].filter(Boolean).join(' ');
-    if (marcaLinea) {
-      document.getElementById('vehiculo-linea').textContent = marcaLinea;
-    } else if (datos.linea) {
-      document.getElementById('vehiculo-linea').textContent = datos.linea;
-    } else {
-      document.getElementById('vehiculo-linea').textContent = 'No disponible';
-    }
-    // Modelo / Clase
-    var modeloClase = [];
-    if (datos.modelo) modeloClase.push(datos.modelo);
-    if (datos.clase) modeloClase.push(datos.clase);
-    if (modeloClase.length) {
-      document.getElementById('vehiculo-modelo').textContent = modeloClase.join(' · ');
-    } else {
-      document.getElementById('vehiculo-modelo').textContent = 'No disponible';
-    }
-    if (typeof datos.base_soat === 'number' && datos.base_soat > 0) {
-      BASE_SOAT = datos.base_soat;
-    } else if (typeof datos.valor_soat_con_descuento === 'number' && datos.valor_soat_con_descuento > 0) {
-      BASE_SOAT = datos.valor_soat_con_descuento;
-    }
-  } else {
-    // Sin datos de consulta → volver al inicio
-    console.warn('No hay datos de cotización, redirigiendo...');
-    // window.location.href = 'index.html';
-  }
+  });
 
-  var chkTerceros = document.getElementById('chk-terceros');
-  var chkAccidentes = document.getElementById('chk-accidentes');
-  var elSoat = document.getElementById('precio-soat');
-  var elTerceros = document.getElementById('precio-terceros');
-  var elAccidentes = document.getElementById('precio-accidentes');
-  var elTotal = document.getElementById('total-pagar');
+  inputCvv.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+  });
 
-  elSoat.textContent = formatCOP(BASE_SOAT);
-  elTerceros.textContent = '+' + formatCOP(PRECIO_TERCEROS);
-  elAccidentes.textContent = '+' + formatCOP(PRECIO_ACCIDENTES);
+  inputDoc.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+  });
 
-  function actualizarTotal() {
-    var total = BASE_SOAT;
-    if (chkTerceros.checked) total += PRECIO_TERCEROS;
-    if (chkAccidentes.checked) total += PRECIO_ACCIDENTES;
-    elTotal.textContent = formatCOP(total);
+  var form = document.getElementById('form-pago-tarjeta');
+  var boxErrores = document.getElementById('mensaje-errores');
+  var listaErrores = document.getElementById('lista-errores');
+  var estadoEnvio = document.getElementById('estado-envio');
 
-    var resumen = {
-      placa: document.getElementById('vehiculo-placa').textContent,
-      terceros: chkTerceros.checked ? 'Sí' : 'No',
-      accidentes: chkAccidentes.checked ? 'Sí' : 'No',
-      total: total,
-      total_formato: formatCOP(total)
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var errores = [];
+    var numeroLimpio = inputNumero.value.replace(/\s+/g, '');
+    var vencimiento  = inputVenc.value.trim();
+    var cvv          = inputCvv.value.trim();
+    var cuotas       = document.getElementById('cuotas-tarjeta').value;
+    var titular      = document.getElementById('titular-tarjeta').value.trim();
+    var tipoDoc      = document.getElementById('tipo-doc-titular').value;
+    var numDoc       = inputDoc.value.trim();
+
+    if (!/^\d{13,19}$/.test(numeroLimpio)) {
+      errores.push('Ingresa un número de tarjeta válido (entre 13 y 19 dígitos).');
+    }
+
+    var matchExp = vencimiento.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+    if (!matchExp) {
+      errores.push('Ingresa una fecha de vencimiento válida en formato MM/AA.');
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      errores.push('Ingresa un código CVV válido de 3 o 4 dígitos.');
+    }
+
+    if (!cuotas) {
+      errores.push('Selecciona el número de cuotas.');
+    }
+
+    if (titular.length < 3) {
+      errores.push('Ingresa el nombre del titular de la tarjeta.');
+    }
+
+    if (!/^\d{5,15}$/.test(numDoc)) {
+      errores.push('Ingresa un número de documento válido para el titular.');
+    }
+
+    if (errores.length > 0) {
+      listaErrores.innerHTML = '';
+      errores.forEach(function (err) {
+        var li = document.createElement('li');
+        li.textContent = err;
+        listaErrores.appendChild(li);
+      });
+      boxErrores.style.display = 'block';
+      estadoEnvio.style.display = 'none';
+      boxErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    boxErrores.style.display = 'none';
+
+    var intentoPago = {
+      medio: 'Tarjeta',
+      placa: placaActual,
+      total: totalActual,
+      ultimos_4: numeroLimpio.slice(-4),
+      vencimiento: vencimiento,
+      cuotas: cuotas,
+      titular: titular,
+      tipo_doc: tipoDoc,
+      numero_doc: numDoc,
+      fecha: new Date().toISOString()
     };
-    sessionStorage.setItem('resumen_soat', JSON.stringify(resumen));
-  }
 
-  chkTerceros.addEventListener('change', actualizarTotal);
-  chkAccidentes.addEventListener('change', actualizarTotal);
-  actualizarTotal();
+    sessionStorage.setItem('ultimo_intento_pago', JSON.stringify(intentoPago));
 
-  document.getElementById('form-coberturas').addEventListener('submit', function () {
-    actualizarTotal();
+    estadoEnvio.textContent =
+      'Datos validados para la placa ' + placaActual + ' (' + totalActual + ' en ' + cuotas + ' cuota(s)). ' +
+      'Conecta este formulario a tu endpoint o worker si deseas procesarlo de forma remota.';
+    estadoEnvio.style.display = 'block';
+    estadoEnvio.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 })();
 </script>
