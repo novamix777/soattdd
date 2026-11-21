@@ -261,4 +261,3 @@ export function documentoValido(documento) {
   const limpio = String(documento ?? '').trim();
   return /^[0-9]{6,12}$/.test(limpio);
 }
- 
