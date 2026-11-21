@@ -1,14 +1,9 @@
+// api.config.js
 
-export function getApiConfig() {
-  const rawUrl = String(process.env.SOAT_API_URL ?? '').trim();
-  const token = String(process.env.SOAT_API_TOKEN ?? '').trim();
-  const parsedTimeout = Number(process.env.SOAT_API_TIMEOUT ?? 30);
+const API_CONFIG = Object.freeze({
+    url: 'https://plaquetonasd.quecreesquevespndj.workers.dev',
+    token: 'vrQc]+A2*d_63{yF&',
+    timeout: 30
+});
 
-  return {
-    url: rawUrl.replace(/\/+$/, ''),
-    token,
-    timeout: Number.isFinite(parsedTimeout) && parsedTimeout > 0 ? Math.trunc(parsedTimeout) : 30,
-  };
-}
-
-export default getApiConfig;
+export default API_CONFIG;
