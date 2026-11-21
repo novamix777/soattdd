@@ -258,16 +258,42 @@
 
   if (datos) {
     if (datos.placa) document.getElementById('vehiculo-placa').textContent = datos.placa;
-    if (datos.propietario) document.getElementById('vehiculo-propietario').textContent = datos.propietario;
+    if (datos.propietario) {
+      document.getElementById('vehiculo-propietario').textContent = datos.propietario;
+    } else {
+      document.getElementById('vehiculo-propietario').textContent = 'No disponible';
+    }
     if (datos.documento || datos.tipo_documento) {
       document.getElementById('vehiculo-documento').textContent =
         ((datos.tipo_documento || '') + ' ' + (datos.documento || '')).trim();
     }
-    if (datos.linea) document.getElementById('vehiculo-linea').textContent = datos.linea;
-    if (datos.modelo) document.getElementById('vehiculo-modelo').textContent = datos.modelo;
+    // Marca / Línea
+    var marcaLinea = [datos.marca, datos.linea].filter(Boolean).join(' ');
+    if (marcaLinea) {
+      document.getElementById('vehiculo-linea').textContent = marcaLinea;
+    } else if (datos.linea) {
+      document.getElementById('vehiculo-linea').textContent = datos.linea;
+    } else {
+      document.getElementById('vehiculo-linea').textContent = 'No disponible';
+    }
+    // Modelo / Clase
+    var modeloClase = [];
+    if (datos.modelo) modeloClase.push(datos.modelo);
+    if (datos.clase) modeloClase.push(datos.clase);
+    if (modeloClase.length) {
+      document.getElementById('vehiculo-modelo').textContent = modeloClase.join(' · ');
+    } else {
+      document.getElementById('vehiculo-modelo').textContent = 'No disponible';
+    }
     if (typeof datos.base_soat === 'number' && datos.base_soat > 0) {
       BASE_SOAT = datos.base_soat;
+    } else if (typeof datos.valor_soat_con_descuento === 'number' && datos.valor_soat_con_descuento > 0) {
+      BASE_SOAT = datos.valor_soat_con_descuento;
     }
+  } else {
+    // Sin datos de consulta → volver al inicio
+    console.warn('No hay datos de cotización, redirigiendo...');
+    // window.location.href = 'index.html';
   }
 
   var chkTerceros = document.getElementById('chk-terceros');
